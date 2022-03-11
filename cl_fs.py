@@ -107,7 +107,7 @@ def clean_f4(f4_input_name, num_f4_files):
     faux = f4.copy()
 
     for i in indice:
-        f4.loc[i-1, 'destino':'total_precio_costo'] = faux.loc[i,'nro_red_inventario':'linea'].values
+        f4.loc[i-1, 'rut_destino':'total_precio_costo'] = faux.loc[i,'local':'linea'].values
 
     f4[f4['nro_red_inventario'].isna()].to_csv(f'output/planillas/{dt_string}-f4-error.csv', sep=';', index=False)
     f4['nro_red_inventario'].fillna('N/A', inplace=True)
