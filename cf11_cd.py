@@ -33,16 +33,17 @@ class CF11_CD():
         if self.year == '2020':
             self.test_call_20()
         elif self.year == '2021':
-            self.test_call_21() 
+            self.test_call_21()
+        elif self.year == '2022':
+            self.test_call_22()
+
 
     def convert_dtypes(self):
         # TODO boost performance 
         # Convertir columnas a número 
         self.data[0].loc[:,'cantidad'] = pd.to_numeric(self.data[0].loc[:,'cantidad'])
         self.data[1].loc[:,'cantidad'] = pd.to_numeric(self.data[1].loc[:,'cantidad'])
-        self.data[2].loc[:,'cant_pickeada'] = pd.to_numeric(self.data[2].loc[:,'cant_pickeada'])
-        self.data[2].loc[:,'cant_recibida'] = pd.to_numeric(self.data[2].loc[:,'cant_recibida'])
-        #f5.loc[:,['cant_pickeada','cant_recibida']] =  f5[['cant_pickeada','cant_recibida']].apply(pd.to_numeric)
+        self.data[2].loc[:,'trf_rec_to_date'] = pd.to_numeric(self.data[2].loc[:,'trf_rec_to_date'])
         self.data[5].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[5].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
 
     def set_dates(self):
@@ -51,8 +52,9 @@ class CF11_CD():
         self.data[3]['fecha_paletiza'] = pd.to_datetime(self.data[3]['fecha_paletiza'])
 
         # TODO ---- revisar desde aquí 
-        colsf5 = ['fe_reserva', 'fe_envo', 'fe_recep']
-        newcolsf5 = ['aaaa reserva', 'aaaa envio', 'aaaa recep']
+        colsf5 = ['trf_entry_date', 'trf_rec_date']
+        newcolsf5 = ['year_res', 'year_rec']
+        self.data[2][colsf5] = self.data[2][colsf5].replace('utc', '')
         self.data[2][newcolsf5] = self.data[2][colsf5].apply(lambda x: x.str.extract('(\d{4})', expand=False))
         # Obtener el año de la reserva, el envío y la recepción
         # datecolsf4 = ['fecha creacion',  'fecha reserva', 'fecha envio']
@@ -118,12 +120,28 @@ class CF11_CD():
         self.multi_test(3, lista_kpi) # KPI
         self.single_test(4, lista_refact) # Refacturación 
 
+    def test_call_22(self):
+        lista_f3 = [['cierre x f3 devuelto a proveedor', '2022']]
+        lista_f4 = [['f4 en revision', '2022'],['cierre x f4 cobrado a terceros', '2022'], ['f4 de merma', '2022'], 
+                    ['entregado a cliente por politica (fast track)', '2022'], ['entregado a cliente', '2022']] 
+        lista_f5 = [['producto en tienda', '2022'], ['cierre con f5 administrativo cd', '2022'], 
+        ['producto compensado con ctverde-recibido', '2022'], ['producto compensado con tienda - recibido', '2022']]
+        lista_kpi = [['cierre x producto guardado despues de inventario', '2022', 'Recibido con fecha anterior al 21/01/2022'], 
+        ['cierre x producto guardado antes de inventario', '2021', 'Recibido con fecha posterior al 20/01/2022']]
+        lista_refact = 'cierre x recupero con cliente - refacturacion - base fal.com'
+
+        self.multi_test(0, lista_f3) # F3 
+        self.multi_test(1, lista_f4) # F4 
+        self.multi_test(2, lista_f5) # F5 
+        self.multi_test(3, lista_kpi) # KPI
+        self.single_test(4, lista_refact) # Refacturación 
+
     def save_test(self):
         dt_string = datetime.now().strftime('%y%m%d-%H%M')
         self.data[5].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[5]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[5]}', index=False, encoding='utf-8') # Guarda el archivo 
         bdcia = self.data[5].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
         bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['nro_red_inventario','upc'],validate='many_to_one')
-        bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['transfer','upc'], validate='many_to_one')
+        bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
         bdcia4 = bdcia3.merge(self.data[3], how='left',left_on=[self.fcols[3]], right_on=['entrada'],validate='many_to_one')
         bdcia5 = bdcia4.merge(self.data[3], how='left',left_on=[self.fcols[4]], right_on=['entrada'],validate='many_to_one')
         #bdcia6 = bdcia4.merge(refact, how='left',left_on=[fcols[4]], right_on=['f12cod'],validate='many_to_one')
