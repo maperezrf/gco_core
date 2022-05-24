@@ -69,13 +69,13 @@ cierres.set_fcols(fcols, [status_column, upc_column, cost_column, qty_column])
 
 lista_f4_2021 = ['f4']
 for status_nuevo in lista_f4_2021:
-    cierres.f4_verify(f4, status_nuevo, '2021')
+    cierres.f4_verify(f4, status_nuevo, '2022')
 
 lista_f3_2021 = ['f3']
 for status_nuevo_f3 in lista_f3_2021:
-    cierres.f3_verify(f3, status_nuevo_f3, '2021')
+    cierres.f3_verify(f3, status_nuevo_f3, '2022')
 
-cierres.f5_verify(f5, 'f5', '2021')
+cierres.f5_verify(f5, 'f5', '2022')
 
 # Tareas finales 
 cierres.finals()

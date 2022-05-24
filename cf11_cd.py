@@ -30,9 +30,9 @@ class CF11_CD():
         self.save_selection() 
 
     def test_call_selection(self):
-        if self.year == '2020':
+        if self.year == '2021':
             self.test_call_20()
-        elif self.year == '2021':
+        elif self.year == '2022':
             self.test_call_21() 
 
     def convert_dtypes(self):
@@ -51,7 +51,7 @@ class CF11_CD():
         self.data[3]['fecha_paletiza'] = pd.to_datetime(self.data[3]['fecha_paletiza'])
 
         # TODO ---- revisar desde aquí 
-        colsf5 = ['fe_reserva', 'fe_envo', 'fe_recep']
+        colsf5 = ['fe_reserva', 'fe_envio', 'fe_recep']
         newcolsf5 = ['aaaa reserva', 'aaaa envio', 'aaaa recep']
         self.data[2][newcolsf5] = self.data[2][colsf5].apply(lambda x: x.str.extract('(\d{4})', expand=False))
         # Obtener el año de la reserva, el envío y la recepción
@@ -103,13 +103,13 @@ class CF11_CD():
         self.single_test(4, lista_refact ) # Refacturación 
 
     def test_call_21(self):
-        lista_f3 = [['cierre x f3 devuelto a proveedor', '2021']]
-        lista_f4 = [['f4 en revision', '2021'],['cierre x f4 cobrado a terceros', '2021'], ['f4 de merma', '2021'], 
-                    ['entregado a cliente por politica (fast track)', '2021'], ['entregado a cliente', '2021']] 
-        lista_f5 = [['producto en tienda', '2021'], ['cierre con f5 administrativo cd', '2021'], 
-        ['producto compensado con ctverde-recibido', '2021'], ['producto compensado con tienda - recibido', '2021']]
-        lista_kpi = [['cierre x producto guardado despues de inventario', '2021', 'Recibido con fecha anterior al 21/01/2021'], 
-        ['cierre x producto guardado antes de inventario', '2020', 'Recibido con fecha posterior al 20/01/2021']]
+        lista_f3 = [['cierre x f3 devuelto a proveedor', '2022']]
+        lista_f4 = [['f4 en revision', '2022'],['cierre x f4 cobrado a terceros', '2022'], ['f4 de merma', '2022'], 
+                    ['entregado a cliente por politica (fast track)', '2022'], ['entregado a cliente', '2022']] 
+        lista_f5 = [['producto en tienda', '2022'], ['cierre con f5 administrativo cd', '2022'], 
+        ['producto compensado con ctverde-recibido', '2022'], ['producto compensado con tienda - recibido', '2022']]
+        lista_kpi = [['cierre x producto guardado despues de inventario', '2022', 'Recibido con fecha anterior al 21/01/2022'], 
+        ['cierre x producto guardado antes de inventario', '2021', 'Recibido con fecha posterior al 20/01/2022']]
         lista_refact = 'cierre x recupero con cliente - refacturacion - base fal.com'
 
         self.multi_test(0, lista_f3) # F3 

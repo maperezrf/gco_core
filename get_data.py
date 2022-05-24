@@ -65,12 +65,12 @@ class GetData():
 
     def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, refact_dir, db_dir):
         # Cargar data
-        f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
-        f4 = pd.read_csv(f4_dir, sep=';', dtype='object')
-        f5 = pd.read_csv(f5_dir, sep=';', dtype='object')
-        kpi = pd.read_csv(kpi_dir, sep=';', dtype='object')
-        refact = pd.read_csv(refact_dir, sep=';', dtype='object')
-        db = pd.read_csv(db_dir, sep=';', dtype='object')
+        f3 = pd.read_csv(f3_dir, sep=';', dtype='object',encoding='latin-1')
+        f4 = pd.read_csv(f4_dir, sep=';', dtype='object',encoding='latin-1')
+        f5 = pd.read_csv(f5_dir, sep=';', dtype='object',encoding='latin-1')
+        kpi = pd.read_csv(kpi_dir, sep=';', dtype='object',encoding='latin-1')
+        refact = pd.read_csv(refact_dir, sep=';', dtype='object',encoding='latin-1')
+        db = pd.read_csv(db_dir, sep=';', dtype='object',encoding='latin-1')
 
         # Inicializar estructuras según tipo análisis
         self.lista =[f3, f4, f5, kpi, refact, db]
@@ -154,7 +154,7 @@ class GetData():
                 cf11_21_colsreq  = ['nfolio','f12', 'prd_upc', 'sku' , 'qproducto', 'xobservacion', 'xservicio','costo_total', 'estado_f11', 'status_final', 'f3', 'f4', 'f5', 'f11_nuevo', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'nc', 'tranf_electro_factura', 'nota', 'ro','mc(f12)', 'ee(f11)'] # Para cd 2021 
                 cf11_21_fnum = ['nfolio','f12', 'prd_upc', 'sku', 'f3', 'f4', 'f5', 'f11_nuevo']
                 cf11_21_num = [ 'qproducto', 'costo_total'] 
-                cf11_21_text = ['xobservacion', 'status_final', 'xservicio', 'estado_f11', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'nc', 'tranf_electro_factura', 'nota']
+                cf11_21_text = ['xobservacion', 'status_final', 'xservicio', 'estado_f11', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'tranf_electro_factura', 'nota']
                 self.update_lists('cf11_cd_21', cf11_21_colsreq, cf11_21_fnum, cf11_21_num, cf11_21_text)
                 self.get_data()
                 self.lista[5] = self.lista[5].rename(columns={'f11':'nfolio'}) # Only for 2021 

@@ -153,7 +153,7 @@ def clean_f5(f5_input_name, num_f5_files):
     # Si son varios archivos de F4s 
     if num_f5_files > 1: 
         for i in range(num_f5_files): 
-            f5_aux = pd.read_csv(f'input/planillas/{f5_input_name}_{i}.csv', sep=';', dtype='object', error_bad_lines=False)
+            f5_aux = pd.read_csv(f'input/planillas/{f5_input_name}_{i}.csv', sep=';', dtype='object', error_bad_lines=False,encoding='latin-1' )
             list_f5.append(f5_aux)
         f5 = pd.concat(list_f5, axis=0)
     else:
@@ -168,7 +168,7 @@ def clean_f5(f5_input_name, num_f5_files):
     
 
 def clean_kpi(kpiname):
-    kpi = pd.read_excel(f'input/planillas/{kpiname}.xlsx', dtype='object')
+    kpi = pd.read_excel(f'input/planillas/{kpiname}.xlsx', dtype=str)
     kpi = ct.norm_header(kpi)
     kpi.rename(columns={'index': 'ind'}, inplace=True)
     kpi.reset_index(inplace=True)

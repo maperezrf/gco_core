@@ -92,7 +92,7 @@ lista_tipmc_f5 = [ 'con mc asociada','compensacion con ct verde', 'se asocia f11
 
 print('Análisis F5s')
 for tipo in tqdm(lista_tipmc_f5):
-    cierres_nc.f5_verify_20_b6(f5, tipo, '2021')
+    cierres_nc.f5_verify_20_b6(f5, tipo, '2022')
 
 # F4 
 lista_tipm_f4 = [ 'f4 de merma', 'f4 merma x producto recibido en 2020', 'f4 cobrado a terceros', 'con f4 de merma', 
