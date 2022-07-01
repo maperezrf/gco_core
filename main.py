@@ -1,6 +1,8 @@
 from io import SEEK_SET
 from os import pipe
 import os
+
+from unidecode import unidecode
 from cf11_cd import CF11_CD
 from cnc_cd import CNC_CD
 
@@ -24,16 +26,13 @@ def menu_cl():
     print('  3. Regresar al menú')
 
 def menu_cf11():
-    print('  1. Cierres de F11 CD 2020')
-    print('  2. Cierres de F11 CD 2021')
-    print('  3. Cierres de F11 Tienda 2020')
-    print('  4. Cierres de F11 Tienda 2021')
-    print('  5. Regresar al menú')
+    print('  1. Cierres de F11 CD 2022')
+    print('  2. Cierres de F11 Tienda 2022')
+    print('  3. Regresar al menú')
 
 def menu_cnc():
-    print('  1. Cierres de NC Local 3000 - 2020')
-    print('  2. Cierres de NC 2021')
-    print('  3. Regresar al menú')
+    print('  1. Cierres de NC 2022')
+    print('  2. Regresar al menú')
 
 while select_var!='4':
     menu()
@@ -55,22 +54,14 @@ while select_var!='4':
         menu_cf11()
         sv_cf11= input('  Rta: ')
         if sv_cf11=='1':
-            names = ['f3', 'f4', 'f5', 'kpi','refact', 'cf11_cd_20']
-            fcols = ['f3nuevo','f4_nuevo','f5','nfolio','f12']
-            pcols = ['indice_cf11','status_nuevo', 'prd_upc', 'total_costo_promedio', 'qproducto']
-            cf11 = CF11_CD('2020', names, fcols, pcols)
-            cf11.run_test()
-        elif sv_cf11=='2':
             names = ['f3', 'f4', 'f5', 'kpi','refact', 'cf11_cd_21']
             fcols = ['f3','f4','f5','nfolio','f12']
             pcols = ['indice_cf11','status_final', 'prd_upc', 'costo_total', 'qproducto']
-            cf11 = CF11_CD('2021', names, fcols, pcols)
+            cf11 = CF11_CD('2022', names, fcols, pcols)
             cf11.run_test()
-        elif sv_cf11=='3':
-            exec(open('cf11_tienda_20.py').read())
-        elif sv_cf11=='4':
+        elif sv_cf11=='2':
             exec(open('cf11_tienda_21.py').read())
-        elif sv_cf11 =='5':
+        elif sv_cf11 =='3':
             clean()
         else:
             print('    Por favor seleccione una opción valida!')
@@ -79,14 +70,12 @@ while select_var!='4':
         menu_cnc()
         sv_nc= input('  Rta: ')
         if sv_nc=='1':
-            exec(open('cierres_nc_cd_20.py').read())
-        elif sv_nc=='2':
             names = ['f3', 'f4', 'f5', 'kpi','refact', 'cierres_nc_21']
             fcols = ['f3','f4','f5','f11', '', 'cod_aut_nc']
             pcols = ['indice_cnc', 'tipificacion_final', 'upc', 'ct', 'cantidad_trx_actual', 'estado_final']
             cnc = CNC_CD(names, fcols, pcols)
             cnc.run_test()
-        elif sv_nc=='3':
+        elif sv_nc=='2':
             clean()
         else:
             print('    Por favor seleccione una opción valida!')

@@ -157,7 +157,7 @@ def clean_f5(f5_input_name, num_f5_files):
             list_f5.append(f5_aux)
         f5 = pd.concat(list_f5, axis=0)
     else:
-        f5 = pd.read_csv(f'input/planillas/{f5_input_name}.csv', sep=';', dtype='object', error_bad_lines=False)
+        f5 = pd.read_csv(f'input/planillas/{f5_input_name}.csv', sep=';', dtype='object', error_bad_lines=False,encoding='latin-1' )
     
     # Guardar archivos
     f5_path = f'output/planillas/{dt_string}-f5-output.csv'

@@ -54,14 +54,14 @@ class CierresF11:
         df2 = self.ica.get_fnan( df1, self.fcols[2], 'F5')
         if df2.empty ==False: 
             df3 = self.ica.get_duplicates( df2, [self.fcols[4], self.pcols[2], self.pcols[4] ], 'F12 + UPC + Cantidad')
-            ne = self.ica.get_notfound( df3, f5, [self.fcols[2], self.pcols[2]], ['transfer','upc'], 'transfer', 'F5|UPC|Qty')
-            df4 = pd.merge(df3, f5, left_on=[self.fcols[2], self.pcols[2]], right_on=['transfer','upc'])
+            ne = self.ica.get_notfound( df3, f5, [self.fcols[2], self.pcols[2]], ['trf_number','prd_upc'], 'trf_number', 'F5|UPC|Qty') # TODO desde aquí modificaciones
+            df4 = pd.merge(df3, f5, left_on=[self.fcols[2], self.pcols[2]], right_on=['trf_number','prd_upc']) # TODO Update datalake  
             if df4.empty ==False: 
-                df5 = self.ica.get_diffvalue(df4, 'estado', 'recibido', 'NRE', 'Registro con estado diferente a recibido')
-                df6 = self.ica.get_equalvalue(df5, 'motivo_discrepancia', 'f5 no recibido', 'MDI', 'Registro con motivo de disc: F5 no recibido')
-                df7 = self.ica.get_diffvalue(df6, 'aaaa reserva', yyyy, 'NAA', f'Registro con año de reserva diferente a {yyyy}')
+                df5 = self.ica.get_diffvalue(df4, 'trf_status', '5', 'NRE', 'Registro con estado diferente a recibido') # TODO Update datalake  
+                #df6 = self.ica.get_equalvalue(df5, 'motivo_discrepancia', 'f5 no recibido', 'MDI', 'Registro con motivo de disc: F5 no recibido')
+                df7 = self.ica.get_diffvalue(df5, 'year_res', yyyy, 'NAA', f'Registro con año de reserva diferente a {yyyy}')
                 comment = 'Cantidad de las F11s de un F5 > cantidad del F5'
-                df8 = self.ica.get_diffqty_pro(df7,  self.pcols[4], 'cant_recibida', self.fcols[3], 'transfer', comment)
+                df8 = self.ica.get_diffqty_pro(df7,  self.pcols[4], 'trf_rec_to_date', self.fcols[3], 'trf_number', comment) # TODO Update datalake  
                 iokf5 = df8[self.pcols[0]].values
                 self.ica.update_db(iokf5, 'GCO','OKK')
                 self.ica.update_db(iokf5, 'Comentario GCO', 'Coincidencia exacta F5+UPC+QTY')
