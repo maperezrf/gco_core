@@ -36,13 +36,13 @@ class CierresF11:
         df2 = self.ica.get_fnan( df1, self.fcols[1], 'F4')
         if df2.empty == False:
             df3 = self.ica.get_duplicates( df2, [self.fcols[4], self.pcols[2], self.pcols[4]], 'F12 + UPC + Cantidad')
-            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], self.pcols[2]], ['nro_red_inventario','upc'], 'nro_red_inventario', 'F4|UPC|QTY')
-            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], self.pcols[2]], right_on=['nro_red_inventario','upc'])
+            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], self.pcols[2]], ['ctech_key','prd_upc'], 'ctech_key', 'F4|UPC|QTY')
+            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], self.pcols[2]], right_on=['ctech_key','prd_upc'])
             if df4.empty ==False: 
-                auxdf4 = self.ica.get_diffvalue(df4, 'tipo_redinv', 'dado de baja', 'NDB', 'El tipo de F4 es diferente a dado de baja')
-                df5 = self.ica.get_equalvalue(auxdf4, 'estado', 'anulado', 'ANU', 'Registro anulado')
-                df6 = self.ica.get_diffvalue(df5, 'aa creacion', yyyy, 'NAA', f'Registro con año de creación diferente a {yyyy}')
-                df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'cantidad',self.fcols[3],'nro_red_inventario', 'Cantidad de los F11s de un F4 > cantidad del F4')
+                auxdf4 = self.ica.get_diffvalue(df4, 'ctipo', '4', 'NDB', 'El tipo de F4 es diferente a dado de baja')
+                df5 = self.ica.get_equalvalue(auxdf4, 'cestado', '4', 'ANU', 'Registro anulado')
+                df6 = self.ica.get_diffvalue(df5, 'aa creacion', yyyy, 'NAA', f'Registro con año de creación diferente a {yyyy}') # TODO resolver año 
+                df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'qf04_ship',self.fcols[3],'ctech_key', 'Cantidad de los F11s de un F4 > cantidad del F4')
                 iokf4 = df7[self.pcols[0]].values
                 self.ica.update_db(iokf4,'GCO', 'OKK')
                 self.ica.update_db(iokf4,'Comentario GCO', 'Coincidencia exacta F4+UPC+QTY')

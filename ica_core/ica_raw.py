@@ -150,8 +150,8 @@ class InternalControlAnalysis:
         :param qty1col: (string) quantity 1 
         :param qty2col: (string) quantity 2 
         """
-        s = bdquery[[fl, ff,qty1col, qty2col, 'cant_pickeada']].groupby([fl, ff]).sum().reset_index()
-        fs = list(s[(s[qty1col]!= s[qty2col]) & (s[qty1col]!= s['cant_pickeada'])][fl].values)
+        s = bdquery[[fl, ff,qty1col, qty2col]].groupby([fl, ff]).sum().reset_index()
+        fs = list(s[s[qty1col]!= s[qty2col]][fl].values)
         dc = bdquery[bdquery[fl].isin(fs)] # Registros con cantidades diferentes
         idc = dc[self.index_column].values
         self.db.loc[idc, 'GCO' ] = 'NCC'
@@ -262,7 +262,7 @@ class InternalControlAnalysis:
         self.db.loc[inotinlist, 'GCO'] = note
         self.db.loc[inotinlist, 'Comentario GCO'] = comment
         bdquery_res = bdquery[bdquery[valuecol].isin(lista)]
-        return bdquery_res, list(notinlist3['local_recep'])
+        return bdquery_res, list(notinlist3['loc_rec'])
     
         #-----------------------------------------------------
     def dupall(self, status):

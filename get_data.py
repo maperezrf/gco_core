@@ -31,8 +31,8 @@ class GetData():
     def set_colsreq(self):
         # Declaración de columnas requeridas 
         f3_colsreq = ['nro_devolucion', 'fecha_reserva', 'fecha_envio', 'fecha_anulacion', 'fecha_confirmacion', 'upc', 'sku', 'linea', 'descripcion6', 'cantidad', 'folio_f11', 'folio_f12']
-        f4_colsreq = ['nro_red_inventario', 'tipo_redinv', 'estado','fecha_creacion', 'destino', 'linea','upc', 'cantidad','f11', 'nro_producto']
-        f5_colsreq = ['trf_number', 'trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec','trf_status', 'prd_upc', 'trf_rec_to_date', 'trf_unit_cost']
+        f4_colsreq = ['ctech_key', 'ctipo', 'cestado','fecha_registro', 'xdestino', 'prod_cat_id','prd_upc', 'qf04_ship','nformulario']
+        f5_colsreq = ['trf_number', 'trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec','trf_status', 'prd_upc', 'trf_rec_to_date', 'total_cost']
         kpi_colsreq = ['index', 'tip0_trabajo', 'entrada','fecha_paletiza', 'aaaa_paletiza']
         refac_colsreq = ['medio_pago','cod#aut', '4_ult', 'f12cod', 'orden_de_compra','cedula', 'valor_boleta','fecha_devolucion', 'confirmacion_facturacion', 'confirmacion_tesoreria']
         self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq , refac_colsreq]
@@ -41,15 +41,15 @@ class GetData():
         # Columnas con datos númericos 
         # Números de Fs, upcs, sku
         f3_fnum = ['nro_devolucion','upc', 'sku','folio_f11', 'folio_f12']
-        f4_fnum = ['nro_red_inventario', 'upc', 'f11']
+        f4_fnum = ['ctech_key', 'prd_upc', 'nformulario']
         f5_fnum = ['trf_number', 'prd_upc']
         kpi_fnum = ['entrada']
         refact_fnum = ['cod#aut', '4_ult', 'f12cod', 'orden_de_compra','cedula']
 
         # Costos y cantidades 
         f3_num = ['cantidad']
-        f4_num = ['cantidad']
-        f5_num = ['trf_rec_to_date', 'trf_unit_cost']
+        f4_num = ['qf04_ship']
+        f5_num = ['trf_rec_to_date', 'total_cost']
 
         self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum, refact_fnum]
         self.lista_num= [f3_num, f4_num, f5_num,'kpi', 'refac']
@@ -57,7 +57,7 @@ class GetData():
     def set_colstext(self):
         # Texto 
         f3_text = ['linea', 'descripcion6']
-        f4_text = ['estado','destino', 'linea']
+        f4_text = ['cestado','xdestino', 'prod_cat_id']
         f5_text = ['trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec', 'trf_status']
 
         kpi_text = ['tip0_trabajo']
@@ -67,7 +67,7 @@ class GetData():
     def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, refact_dir, db_dir):
         # Cargar data
         f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
-        f4 = pd.read_csv(f4_dir, sep=';', dtype='object')
+        f4 = pd.read_csv(f4_dir, sep=',', dtype='object')
         f5 = pd.read_csv(f5_dir, sep=',', dtype='object')
         print(f5.columns)
         kpi = pd.read_csv(kpi_dir, sep=';', dtype='object')
@@ -112,14 +112,14 @@ class GetData():
 
         # Eliminar filas duplicados 
         self.lista[0].drop_duplicates(['nro_devolucion', 'upc'], inplace= True)
-        self.lista[1].drop_duplicates(['nro_red_inventario', 'upc'], inplace=True)
+        self.lista[1].drop_duplicates(['ctech_key', 'prd_upc'], inplace=True)
         self.lista[2].drop_duplicates(['trf_number','prd_upc'], inplace=True)
         self.lista[3].drop_duplicates(['entrada'], inplace=True)
         self.lista[4].drop_duplicates(['f12cod', 'orden_de_compra'], inplace=True)
 
         # Eliminar registros con #s de F nulos 
         self.lista[0] = self.lista[0][self.lista[0].nro_devolucion.notna()]
-        self.lista[1] = self.lista[1][self.lista[1].nro_red_inventario.notna()]
+        self.lista[1] = self.lista[1][self.lista[1].ctech_key.notna()]
         self.lista[2] = self.lista[2][self.lista[2].trf_number.notna()]
         self.lista[3] = self.lista[3][self.lista[3].entrada.notna()]
         self.lista[4] = self.lista[4][self.lista[4].f12cod.notna()]
@@ -192,10 +192,10 @@ class GetData():
                 self.save_files('cierres_nc')
             
             elif data_select == '6': # Cierres NCs 2021
-                cnc_colsreq = ['cod_aut_nc', 'local_trx', 'terminal', 'local_ant', 'upc', 'ct', 'cantidad_trx_actual', 'tipo_nc', 'f3', 'f4','f5', 'f11', 'estado_final', 'tipificacion_final', 'sku', 'primera_do_f12', 'fecha_proceso', 'fecha_proc_ant', 'ctip_prd', 'xtip_prd', 'desc_sku', 'tipo_nc'] 
+                cnc_colsreq = ['cod_aut_nc', 'local_trx', 'terminal', 'local_ant', 'upc', 'ct', 'cantidad_trx_actual', 'f3', 'f4','f5', 'f11', 'estado_final', 'tipificacion_final', 'sku', 'primera_do_f12', 'fecha_proceso', 'fecha_proc_ant', 'ctip_prd', 'xtip_prd', 'desc_sku'] 
                 cnc_fnum = ['cod_aut_nc', 'upc', 'f3', 'f4', 'f5','local_trx', 'terminal', 'local_ant', 'sku', 'primera_do_f12']
                 cnc_num = [ 'ct', 'cantidad_trx_actual'] 
-                cnc_text = ['estado_final', 'tipificacion_final', 'ctip_prd', 'xtip_prd', 'desc_sku', 'tipo_nc']
+                cnc_text = ['estado_final', 'tipificacion_final', 'ctip_prd', 'xtip_prd', 'desc_sku']
                 self.update_lists('cierres_nc_21', cnc_colsreq, cnc_fnum, cnc_num, cnc_text)
                 self.get_data()
                 self.save_files('cierres_nc')

@@ -34,10 +34,9 @@ c11t.rename(columns={'index': index_name}, inplace=True)
 
 # Convertir columnas a número 
 f3.loc[:,'cantidad'] = pd.to_numeric(f3.loc[:,'cantidad'])
-f4.loc[:,'cantidad'] = pd.to_numeric(f4.loc[:,'cantidad'])
-f5.loc[:,'cant_pickeada'] = pd.to_numeric(f5.loc[:,'cant_pickeada'])
-f5.loc[:,'cant_recibida'] = pd.to_numeric(f5.loc[:,'cant_recibida'])
-#f5.loc[:,['cant_pickeada','cant_recibida']] =  f5[['cant_pickeada','cant_recibida']].apply(pd.to_numeric)
+f4.loc[:,'qf04_ship'] = pd.to_numeric(f4.loc[:,'qf04_ship'])
+f4.loc[:,'fecha_registro'] = pd.to_datetime(f4.loc[:,'fecha_registro'])
+f5.loc[:,'trf_rec_to_date'] = pd.to_numeric(f5.loc[:,'trf_rec_to_date'])
 c11t.loc[:,[qty_column,cost_column]] = c11t[[qty_column,cost_column]].apply(pd.to_numeric)
 
 # TODO ---- revisar desde aquí 
@@ -48,8 +47,8 @@ c11t.loc[:,[qty_column,cost_column]] = c11t[[qty_column,cost_column]].apply(pd.t
 
 kpi['fecha_paletiza'] = pd.to_datetime(kpi['fecha_paletiza'])
 
-colsf5 = ['fe_reserva', 'fe_envo', 'fe_recep']
-newcolsf5 = ['aaaa reserva', 'aaaa envio', 'aaaa recep']
+colsf5 = ['trf_entry_date', 'trf_rec_date']
+newcolsf5 = ['year_res', 'year_rec']
 f5[newcolsf5] = f5[colsf5].apply(lambda x: x.str.extract('(\d{4})', expand=False))
 # Obtener el año de la reserva, el envío y la recepción
 # datecolsf4 = ['fecha creacion',  'fecha reserva', 'fecha envio']
@@ -60,14 +59,14 @@ colsf3 = ['fecha_reserva', 'fecha_envio', 'fecha_anulacion','fecha_confirmacion'
 newcolsf3 = ['aaaa reserva', 'aaaa envio', 'aaaa anulacion','aaaa confirmacion']
 f3[newcolsf3] = f3[colsf3].apply(lambda x: x.str.extract('(\d{4})', expand=False))
 
-f4['aa creacion'] = f4['fecha_creacion'].str.split('-').str[2]
+f4['aa creacion'] = f4['fecha_registro'].dt.strftime('%Y')
 # TODO ---- revisar hasta aquí 
 
 # Inicio de análisis de cierres 
 cierres = CierresF11(c11t, index_name)
 cierres.set_fcols(fcols, [status_column, upc_column, cost_column, qty_column])
 
-lista_f4_2021 = ['f4']
+lista_f4_2021 = ['f4', 'f4 en tienda']
 for status_nuevo in lista_f4_2021:
     cierres.f4_verify(f4, status_nuevo, '2022')
 
