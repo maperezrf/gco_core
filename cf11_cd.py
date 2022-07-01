@@ -1,3 +1,4 @@
+from multiprocessing import set_forkserver_preload
 from os import name
 import pandas as pd
 from datetime import datetime
@@ -42,9 +43,11 @@ class CF11_CD():
         # TODO boost performance 
         # Convertir columnas a número 
         self.data[0].loc[:,'cantidad'] = pd.to_numeric(self.data[0].loc[:,'cantidad'])
-        self.data[1].loc[:,'cantidad'] = pd.to_numeric(self.data[1].loc[:,'cantidad'])
+        self.data[1].loc[:,'qf04_ship'] = pd.to_numeric(self.data[1].loc[:,'qf04_ship'])
+        self.data[1].loc[:,'fecha_registro'] = pd.to_datetime(self.data[1].loc[:,'fecha_registro'].str.replace('UTC', ''))
         self.data[2].loc[:,'trf_rec_to_date'] = pd.to_numeric(self.data[2].loc[:,'trf_rec_to_date'])
         self.data[5].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[5].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
+
 
     def set_dates(self):
         # TODO delete this method 
@@ -64,8 +67,8 @@ class CF11_CD():
         colsf3 = ['fecha_reserva', 'fecha_envio', 'fecha_anulacion','fecha_confirmacion']
         newcolsf3 = ['aaaa reserva', 'aaaa envio', 'aaaa anulacion','aaaa confirmacion']
         self.data[0][newcolsf3] = self.data[0][colsf3].apply(lambda x: x.str.extract('(\d{4})', expand=False))
-
-        self.data[1]['aa creacion'] = self.data[1]['fecha_creacion'].str.split('-').str[2]
+        
+        self.data[1]['aa creacion'] = self.data[1]['fecha_registro'].dt.strftime('%Y')
 
     def set_index(self) -> None:
         self.data[5] = self.data[5].reset_index()
@@ -140,7 +143,7 @@ class CF11_CD():
         dt_string = datetime.now().strftime('%y%m%d-%H%M')
         self.data[5].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[5]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[5]}', index=False, encoding='utf-8') # Guarda el archivo 
         bdcia = self.data[5].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
-        bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['nro_red_inventario','upc'],validate='many_to_one')
+        bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['ctech_key','prd_upc'],validate='many_to_one')
         bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
         bdcia4 = bdcia3.merge(self.data[3], how='left',left_on=[self.fcols[3]], right_on=['entrada'],validate='many_to_one')
         bdcia5 = bdcia4.merge(self.data[3], how='left',left_on=[self.fcols[4]], right_on=['entrada'],validate='many_to_one')
