@@ -35,7 +35,7 @@ c11t.rename(columns={'index': index_name}, inplace=True)
 # Convertir columnas a número 
 f3.loc[:,'cantidad'] = pd.to_numeric(f3.loc[:,'cantidad'])
 f4.loc[:,'qf04_ship'] = pd.to_numeric(f4.loc[:,'qf04_ship'])
-f4.loc[:,'fecha_registro'] = pd.to_datetime(f4.loc[:,'fecha_registro'])
+f4.loc[:,'fecha_registro'] = pd.to_datetime(f4.loc[:,'fecha_registro'].str.replace('UTC', ''))
 f5.loc[:,'trf_rec_to_date'] = pd.to_numeric(f5.loc[:,'trf_rec_to_date'])
 c11t.loc[:,[qty_column,cost_column]] = c11t[[qty_column,cost_column]].apply(pd.to_numeric)
 

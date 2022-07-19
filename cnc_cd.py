@@ -41,7 +41,8 @@ class CNC_CD():
         # TODO boost performance 
         # Convertir columnas a número 
         self.data[0].loc[:,'cantidad'] = pd.to_numeric(self.data[0].loc[:,'cantidad'])
-        self.data[1].loc[:,'cantidad'] = pd.to_numeric(self.data[1].loc[:,'cantidad'])
+        self.data[1].loc[:,'qf04_ship'] = pd.to_numeric(self.data[1].loc[:,'qf04_ship'])
+        self.data[1].loc[:,'fecha_registro'] = pd.to_datetime(self.data[1].loc[:,'fecha_registro'].str.replace('UTC', ''))
         self.data[2].loc[:,'trf_rec_to_date'] = pd.to_numeric(self.data[2].loc[:,'trf_rec_to_date'])
         self.data[5].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[5][[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
 
@@ -64,7 +65,7 @@ class CNC_CD():
         newcolsf3 = ['aaaa reserva', 'aaaa envio', 'aaaa anulacion','aaaa confirmacion']
         self.data[0][newcolsf3] = self.data[0][colsf3].apply(lambda x: x.str.extract('(\d{4})', expand=False))
 
-        self.data[1]['aa creacion'] = self.data[1]['fecha_creacion'].str.split('-').str[2]
+        self.data[1]['aa creacion'] = self.data[1]['fecha_registro'].dt.strftime('%Y')
 
     def multi_test(self, test_id, tlist):
         for tlist_desc in tlist:
@@ -111,7 +112,7 @@ class CNC_CD():
         dt_string = datetime.now().strftime('%y%m%d-%H%M')
         self.data[5].to_excel(f'output/cierres_nc/{dt_string}-cnc_21-output.xlsx', sheet_name=f'{dt_string}_cnc', index=False)
         nc2 = self.data[5].merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
-        nc3 = nc2.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['nro_red_inventario','upc'],validate='many_to_one')
+        nc3 = nc2.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['ctech_key','prd_upc'],validate='many_to_one')
         path = f'output/cierres_nc/{dt_string}-cnc_21-all.xlsx'
         nc3.to_excel(path, sheet_name=f'{dt_string}_cnc', index=False) 
         return path

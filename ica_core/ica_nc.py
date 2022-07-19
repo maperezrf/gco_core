@@ -60,14 +60,15 @@ class CierresNC:
         df2 = self.ica.get_fnan( df1, self.fcols[1], 'F4')
         if df2.empty == False:
             df3 = self.ica.get_duplicates( df2, [self.fcols[5], 'local_trx',self.pcols[2], self.pcols[4]], 'Cod Aut + Local + UPC + Qty')
-            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], self.pcols[2]], ['nro_red_inventario','upc'], 'nro_red_inventario', 'F4|UPC|QTY')
-            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], self.pcols[2]], right_on=['nro_red_inventario','upc'])
+            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], self.pcols[2]], ['ctech_key','prd_upc'], 'ctech_key', 'F4|UPC|QTY')
+            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], self.pcols[2]], right_on=['ctech_key','prd_upc'])
             if df4.empty ==False: 
-                df5 = self.ica.get_equalvalue(df4, 'estado', 'anulado', 'ANU', 'Registro anulado')
+                auxdf4 = self.ica.get_diffvalue(df4, 'ctipo', '4', 'NDB', 'El tipo de F4 es diferente a dado de baja')
+                df5 = self.ica.get_equalvalue(auxdf4, 'cestado', '4', 'ANU', 'Registro anulado')
                 df6 = self.ica.get_diffvalue(df5, 'aa creacion', yyyy, 'NAA', f'Registro con año de creación diferente a {yyyy}')
                 comment = 'Cantidad de las NCs de un F4 > cantidad del F4'
                 if df6.empty == False:
-                    df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'cantidad',self.fcols[5],'nro_red_inventario', comment)
+                    df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'qf04_ship',self.fcols[5],'ctech_key', comment)
                     iokf4 = df7[self.pcols[0]].values
                     self.ica.update_db(iokf4,'GCO', 'OKK')
                     self.ica.update_db(iokf4,'Comentario GCO', 'Coincidencia exacta F4+UPC+QTY')
@@ -77,14 +78,14 @@ class CierresNC:
         df2 = self.ica.get_fnan( df1, self.fcols[1], 'F4')
         if df2.empty == False:
             df3 = self.ica.get_duplicates( df2, [self.fcols[5], self.pcols[2], self.pcols[4]], 'Cod Aut + UPC + Qty')
-            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], self.pcols[2]], ['nro_red_inventario','upc'], 'nro_red_inventario', 'F4|UPC|QTY')
-            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], self.pcols[2]], right_on=['nro_red_inventario','upc'])
+            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], self.pcols[2]], ['ctech_key','prd_upc'], 'ctech_key', 'F4|UPC|QTY')
+            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], self.pcols[2]], right_on=['ctech_key','prd_upc'])
             if df4.empty ==False: 
                 df5 = self.ica.get_equalvalue(df4, 'estado', 'anulado', 'ANU', 'Registro anulado')
                 df6 = self.ica.get_diffvalue(df5, 'aa creacion', yyyy, 'NAA', f'Registro con año de creación diferente a {yyyy}')
                 comment = 'Cantidad de las NCs de un F4 > cantidad del F4'
                 if df6.empty == False:
-                    df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'cantidad',self.fcols[5],'nro_red_inventario', comment)
+                    df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'cantidad',self.fcols[5],'ctech_key', comment)
                     iokf4 = df7[self.pcols[0]].values
                     self.ica.update_db(iokf4,'GCO', 'OKK')
                     self.ica.update_db(iokf4,'Comentario GCO', 'Coincidencia exacta F4+UPC+QTY')
@@ -94,14 +95,14 @@ class CierresNC:
         df2 = self.ica.get_fnan( df1, self.fcols[1], 'F4')
         if df2.empty == False:
             df3 = self.ica.get_duplicates( df2, [self.fcols[5], 'sku', self.pcols[4]], 'Cod Aut + SKU + Qty')
-            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], 'sku'], ['nro_red_inventario','nro_producto'], 'nro_red_inventario', 'F4|UPC|QTY')
-            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], 'sku'], right_on=['nro_red_inventario','nro_producto'])
+            ne = self.ica.get_notfound( df3, f4, [self.fcols[1], 'sku'], ['ctech_key','nro_producto'], 'ctech_key', 'F4|UPC|QTY')
+            df4 = pd.merge(df3, f4, left_on=[self.fcols[1], 'sku'], right_on=['ctech_key','nro_producto'])
             if df4.empty ==False: 
                 df5 = self.ica.get_equalvalue(df4, 'estado', 'anulado', 'ANU', 'Registro anulado')
                 df6 = self.ica.get_diffvalue(df5, 'aa creacion', yyyy, 'NAA', f'Registro con año de creación diferente a {yyyy}')
                 comment = 'Cantidad de las NCs de un F4 > cantidad del F4'
                 if df6.empty == False:
-                    df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'cantidad',self.fcols[5],'nro_red_inventario', comment)
+                    df7 = self.ica.get_diffqty_pro(df6, self.pcols[4], 'cantidad',self.fcols[5],'ctech_key', comment)
                     iokf4 = df7[self.pcols[0]].values
                     self.ica.update_db(iokf4,'GCO', 'OKK')
                     self.ica.update_db(iokf4,'Comentario GCO', 'Coincidencia exacta F4+UPC+QTY')
