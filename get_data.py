@@ -69,7 +69,6 @@ class GetData():
         f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
         f4 = pd.read_csv(f4_dir, sep=',', dtype='object')
         f5 = pd.read_csv(f5_dir, sep=',', dtype='object')
-        print(f5.columns)
         kpi = pd.read_csv(kpi_dir, sep=';', dtype='object')
         refact = pd.read_csv(refact_dir, sep=';', dtype='object')
         db = pd.read_csv(db_dir, sep=';', dtype='object')
