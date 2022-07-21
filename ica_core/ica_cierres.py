@@ -81,9 +81,9 @@ class CierresF11:
             pgdim = pd.concat(lpgdi, axis=0)
             pgdimdyear = '' 
             if yyyy == '2022': 
-                pgdimdyear = self.ica.get_lvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,21), 'NAA',commenty)
+                pgdimdyear = self.ica.get_lvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA',commenty)
             elif yyyy =='2021':
-                pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,21), 'NAA', commenty)
+                pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA', commenty)
             iokkpid = pgdimdyear[self.pcols[0]].values
             self.ica.update_db(iokkpid,'GCO', 'OKK')
             self.ica.update_db(iokkpid,'Comentario GCO', 'Coincidencia exacta (F12|F11)')

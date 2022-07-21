@@ -129,8 +129,8 @@ class CF11_CD():
                     ['entregado a cliente por politica (fast track)', '2022'], ['entregado a cliente', '2022']] 
         lista_f5 = [['producto en tienda', '2022'], ['cierre con f5 administrativo cd', '2022'], 
         ['producto compensado con ctverde-recibido', '2022'], ['producto compensado con tienda - recibido', '2022']]
-        lista_kpi = [['cierre por producto guardado despues de inventario', '2022', 'Recibido con fecha anterior al 21/01/2022'], 
-        ['cierre por producto guardado antes de inventario', '2021', 'Recibido con fecha posterior al 20/01/2022']]
+        lista_kpi = [['cierre por producto guardado despues de inventario', '2022', 'Recibido con fecha anterior al 14/01/2022'], 
+        ['cierre por producto guardado antes de inventario', '2021', 'Recibido con fecha posterior al 14/01/2022']]
         lista_refact = 'cierre x recupero con cliente - refacturacion - base fal.com'
 
         self.multi_test(0, lista_f3) # F3 
