@@ -211,9 +211,9 @@ def menu_gd():
 def init_commandline():
     dtlkcon = DTLKCONTROL()
     gdlines = dtlkcon.update_files()
-    
+    print(gdlines)
     gd = GetData()
-    gd.load_data(gdlines[1], gdlines[2], gdlines[3], gdlines[4], gdlines[5])
+    gd.load_data(gdlines[0], gdlines[1], gdlines[2], gdlines[3], gdlines[4])
     gd.run_gd()
 
 if __name__=='__main__':
