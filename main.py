@@ -21,6 +21,7 @@ def menu():
     print('-----------------------')
 
 def menu_cl():
+    print('  0. Actualizar archivos dtlk')
     print('  1. Limpiar data')
     print('  2. Procesar data')
     print('  3. Regresar al menú')
@@ -41,7 +42,9 @@ while select_var!='4':
     if select_var =='1':
         menu_cl()
         sv_cl = input('  Rta: ')
-        if sv_cl=='1':
+        if sv_cl =='0':
+            exec(open('dtlk_control.py').read())
+        elif sv_cl=='1':
             exec(open('cl_fs.py').read())
         elif sv_cl=='2':
             exec(open('get_data.py').read())
