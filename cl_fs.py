@@ -177,9 +177,9 @@ def clean_kpi(kpiname):
     kpi['entrada'] = kpi.entrada.str.extract('(\d+)', expand=False)
 
     du = kpi[kpi.duplicated(subset=['entrada'],keep=False)]
-    td = du[du['aaaa paletiza'] !='2021']
+    td = du[du['aaaa paletiza'] !='2022']
     kpi.drop(index=td['index'].values, inplace=True)
-    kpi.drop_duplicates(subset=['entrada'], inplace=True) # Agradado el 1 de junio para correcci{on }
+    kpi.drop_duplicates(subset=['entrada'], inplace=True) # TODO Cambiar por row_number() SQL
 
     # Guardar archivos 
     du.to_csv(f'output/planillas/{dt_string}-kpi-du.csv', sep=';', decimal=',', index=False)
