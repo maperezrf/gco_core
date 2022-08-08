@@ -1,5 +1,4 @@
 # Librerías
-import imp
 import pandas as pd
 from datetime import datetime
 from etl_core.cl_cleaning import CleaningText as ct 
@@ -83,9 +82,7 @@ class GetData():
 
         print('Eliminando columnas no requeridas')
         for i in tqdm(range(len(self.lista))): 
-            print(self.lista[i].columns)
             drop_except(self.lista[i],self.dfs_colsreq[i])
-            print(self.lista[i].columns)
 
         # Limpiar texto
         print('Limpiando texto en columnas')
@@ -108,14 +105,12 @@ class GetData():
         self.lista[1].drop_duplicates(['ctech_key', 'prd_upc'], inplace=True)
         self.lista[2].drop_duplicates(['trf_number','prd_upc'], inplace=True)
         self.lista[3].drop_duplicates(['entrada'], inplace=True)
-        self.lista[4].drop_duplicates(['f12cod', 'orden_de_compra'], inplace=True)
 
         # Eliminar registros con #s de F nulos 
         self.lista[0] = self.lista[0][self.lista[0].nro_devolucion.notna()]
         self.lista[1] = self.lista[1][self.lista[1].ctech_key.notna()]
         self.lista[2] = self.lista[2][self.lista[2].trf_number.notna()]
         self.lista[3] = self.lista[3][self.lista[3].entrada.notna()]
-        self.lista[4] = self.lista[4][self.lista[4].f12cod.notna()]
 
     def save_files(self, folder):
         # Guardar archivos 
@@ -211,7 +206,6 @@ def menu_gd():
 def init_commandline():
     dtlkcon = DTLKCONTROL()
     gdlines = dtlkcon.update_files()
-    print(gdlines)
     gd = GetData()
     gd.load_data(gdlines[0], gdlines[1], gdlines[2], gdlines[3], gdlines[4])
     gd.run_gd()
