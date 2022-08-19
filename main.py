@@ -21,6 +21,7 @@ def menu():
     print('-----------------------')
 
 def menu_cl():
+    print('  0. Actualizar archivos dtlk')
     print('  1. Limpiar data')
     print('  2. Procesar data')
     print('  3. Regresar al menú')
@@ -41,7 +42,9 @@ while select_var!='4':
     if select_var =='1':
         menu_cl()
         sv_cl = input('  Rta: ')
-        if sv_cl=='1':
+        if sv_cl =='0':
+            exec(open('dtlk_control.py').read())
+        elif sv_cl=='1':
             exec(open('cl_fs.py').read())
         elif sv_cl=='2':
             exec(open('get_data.py').read())
@@ -54,7 +57,7 @@ while select_var!='4':
         menu_cf11()
         sv_cf11= input('  Rta: ')
         if sv_cf11=='1':
-            names = ['f3', 'f4', 'f5', 'kpi','refact', 'cf11_cd_21']
+            names = ['f3', 'f4', 'f5', 'kpi','cf11_cd_21']
             fcols = ['f3','f4','f5','nfolio','f12']
             pcols = ['indice_cf11','status_final', 'prd_upc', 'costo_total', 'qproducto']
             cf11 = CF11_CD('2022', names, fcols, pcols)

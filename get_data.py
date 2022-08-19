@@ -1,23 +1,21 @@
 # Librerías
+import imp
 import pandas as pd
 from datetime import datetime
 from etl_core.cl_cleaning import CleaningText as ct 
 from tqdm import tqdm
+from dtlk_control import DTLKCONTROL
 
 dt_string = datetime.now().strftime('%y%m%d-%H%M')
 
 # Configuraciones
 pd.set_option('float_format', '{:,.2f}'.format)
 
-config = open('config/get_data_config.txt', 'r', encoding='ISO-8859-1')
-gdlines = [line.strip() for line in config.readlines()]
-config.close()
-
 class GetData():
 
     def __init__(self) -> None:
         self.lista = []
-        self.names = ['f3', 'f4', 'f5', 'kpi','refact']
+        self.names = ['f3', 'f4', 'f5', 'kpi']
         self.dfs_colsreq = []
         self.lista_fnum = []
         self.lista_num = []
@@ -34,8 +32,7 @@ class GetData():
         f4_colsreq = ['ctech_key', 'ctipo', 'cestado','fecha_registro', 'xdestino', 'prod_cat_id','prd_upc', 'qf04_ship','nformulario']
         f5_colsreq = ['trf_number', 'trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec','trf_status', 'prd_upc', 'trf_rec_to_date', 'total_cost']
         kpi_colsreq = ['index', 'tip0_trabajo', 'entrada','fecha_paletiza', 'aaaa_paletiza']
-        refac_colsreq = ['medio_pago','cod#aut', '4_ult', 'f12cod', 'orden_de_compra','cedula', 'valor_boleta','fecha_devolucion', 'confirmacion_facturacion', 'confirmacion_tesoreria']
-        self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq , refac_colsreq]
+        self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq]
 
     def set_colsnum(self):
         # Columnas con datos númericos 
@@ -44,15 +41,14 @@ class GetData():
         f4_fnum = ['ctech_key', 'prd_upc', 'nformulario']
         f5_fnum = ['trf_number', 'prd_upc']
         kpi_fnum = ['entrada']
-        refact_fnum = ['cod#aut', '4_ult', 'f12cod', 'orden_de_compra','cedula']
 
         # Costos y cantidades 
         f3_num = ['cantidad']
         f4_num = ['qf04_ship']
         f5_num = ['trf_rec_to_date', 'total_cost']
 
-        self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum, refact_fnum]
-        self.lista_num= [f3_num, f4_num, f5_num,'kpi', 'refac']
+        self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum]
+        self.lista_num= [f3_num, f4_num, f5_num,'kpi']
 
     def set_colstext(self):
         # Texto 
@@ -61,20 +57,18 @@ class GetData():
         f5_text = ['trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec', 'trf_status']
 
         kpi_text = ['tip0_trabajo']
-        refact_text = ['medio_pago','confirmacion_facturacion', 'confirmacion_tesoreria']
-        self.lista_text = [f3_text, f4_text, f5_text, kpi_text, refact_text]
+        self.lista_text = [f3_text, f4_text, f5_text, kpi_text]
 
-    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, refact_dir, db_dir):
+    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, db_dir):
         # Cargar data
         f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
         f4 = pd.read_csv(f4_dir, sep=',', dtype='object')
         f5 = pd.read_csv(f5_dir, sep=',', dtype='object')
         kpi = pd.read_csv(kpi_dir, sep=';', dtype='object')
-        refact = pd.read_csv(refact_dir, sep=';', dtype='object')
         db = pd.read_csv(db_dir, sep=';', dtype='object')
 
         # Inicializar estructuras según tipo análisis
-        self.lista =[f3, f4, f5, kpi, refact, db]
+        self.lista =[f3, f4, f5, kpi, db]
 
     def get_data(self):
         # Normailzar headers
@@ -114,14 +108,14 @@ class GetData():
         self.lista[1].drop_duplicates(['ctech_key', 'prd_upc'], inplace=True)
         self.lista[2].drop_duplicates(['trf_number','prd_upc'], inplace=True)
         self.lista[3].drop_duplicates(['entrada'], inplace=True)
-        self.lista[4].drop_duplicates(['f12cod', 'orden_de_compra'], inplace=True)
+        # self.lista[4].drop_duplicates(['f12cod', 'orden_de_compra'], inplace=True)
 
         # Eliminar registros con #s de F nulos 
         self.lista[0] = self.lista[0][self.lista[0].nro_devolucion.notna()]
         self.lista[1] = self.lista[1][self.lista[1].ctech_key.notna()]
         self.lista[2] = self.lista[2][self.lista[2].trf_number.notna()]
         self.lista[3] = self.lista[3][self.lista[3].entrada.notna()]
-        self.lista[4] = self.lista[4][self.lista[4].f12cod.notna()]
+        # self.lista[4] = self.lista[4][self.lista[4].f12cod.notna()]
 
     def save_files(self, folder):
         # Guardar archivos 
@@ -148,7 +142,7 @@ class GetData():
                 cf11_20_colsreq  = ['nfolio','f12', 'prd_upc', 'qproducto', 'xobservacion', 'total_costo_promedio', 'estado_actual', 'status_nuevo', 'f3nuevo', 'f4_nuevo', 'f5', 'reporte_a_contabilidad', 'movimiento_contable', 'nc', 'tranf_electro_factura', 'pv', 'transportadora_nuevo'] # Para cd 2020 
                 cf11_20_fnum = ['nfolio','f12', 'prd_upc', 'f3nuevo', 'f4_nuevo', 'f5']
                 cf11_20_num = [ 'qproducto', 'total_costo_promedio']
-                cf11_20_text = ['xobservacion','estado_actual', 'status_nuevo',  'reporte_a_contabilidad', 'movimiento_contable', 'nc', 'tranf_electro_factura', 'pv', 'transportadora_nuevo']
+                cf11_20_text = ['xobservacion','estado_actual', 'status_nuevo', 'reporte_a_contabilidad', 'movimiento_contable', 'nc', 'tranf_electro_factura', 'pv', 'transportadora_nuevo']
                 self.update_lists('cf11_cd_20', cf11_20_colsreq, cf11_20_fnum, cf11_20_num, cf11_20_text)
                 self.get_data()
                 self.save_files('cierres_f11/cd')
@@ -160,7 +154,7 @@ class GetData():
                 cf11_21_text = ['xobservacion', 'status_final', 'xservicio', 'estado_f11', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'tranf_electro_factura', 'nota']
                 self.update_lists('cf11_cd_21', cf11_21_colsreq, cf11_21_fnum, cf11_21_num, cf11_21_text)
                 self.get_data()
-                self.lista[5] = self.lista[5].rename(columns={'f11':'nfolio'}) # Only for 2021 
+                self.lista[4] = self.lista[4].rename(columns={'f11':'nfolio'}) # Only for 2021 
                 self.save_files('cierres_f11/cd')
 
             elif data_select =='3': # CF11s Tienda 2020 
@@ -215,8 +209,10 @@ def menu_gd():
     return input('Seleccione una opción (1-4):')
 
 def init_commandline():
+    dtlkcon = DTLKCONTROL()
+    gdlines = dtlkcon.update_files()
     gd = GetData()
-    gd.load_data(gdlines[0], gdlines[1], gdlines[2], gdlines[3], gdlines[4], gdlines[5])
+    gd.load_data(gdlines[0], gdlines[1], gdlines[2], gdlines[3], gdlines[4])
     gd.run_gd()
 
 if __name__=='__main__':

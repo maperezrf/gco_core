@@ -1,37 +1,55 @@
-# from  os import  listdir
-# from datetime import datetime
-# from google.cloud import bigquery
-# import google.auth
+from  os import  listdir
+from datetime import datetime
+from winreg import QueryValueEx
+from gcloud import GCLOUD
+from datetime import datetime
 
-# # path_f4 = 'C:/Users/ext_maperezr/OneDrive - Falabella/General/DATA/F4'
-# # path_f3 = 'C:/Users/ext_maperezr/OneDrive - Falabella/General/DATA/F3'
-# # path_f11 = 'C:/Users/ext_maperezr/OneDrive - Falabella/General/DATA/F11'
-# # path_f5 = 'C:/Users/ext_maperezr/OneDrive - Falabella/General/DATA/F5'
+class DTLKCONTROL():
+    dt_string = datetime.now().strftime('%y%m%d')
+    fs = ['F4', 'F5'] 
+    pname = 'txd-ops-control-faco-dtlk'
+    tables = ['f4_gco.f4_productos', 'f5_reports.f5_cf11']
 
-# # def get_last_file(path):
-# #     list_archive = listdir(path)
-# #     date_archive = [ datetime.strptime(name[0:6], '%y%m%d') for name in list_archive]
-# #     last = max(date_archive)
-# #     indice = list_archive[date_archive.index(last)]
-# #     hoy =  datetime.now().strftime('%y%m%d')
-# #     if last.strftime('%y%m%d') == hoy:
-# #         return f'{path}/{indice}', True
-# #     else:
-# #         return f'{path}/{indice}', False
+    def __init__(self) -> None:
+        self.gcp = GCLOUD()
+        self.gdlines = load_text_file()
 
+    def update_files(self):
+        for i, f in enumerate(self.fs):
+            lasfile = get_last_file(f'{self.gdlines[0]}/{f}')
+            if lasfile[1]:
+                print(f'Archivo de {f} está actualizado!')
+                self.gdlines[i+2] = lasfile[0]
+            else:
+                print(f'Actualizando {f} ...')
+                query = f'SELECT * FROM {self.pname}.{self.tables[i]}'
+                df = self.gcp.get_query(query)
+                path = f'{self.gdlines[0]}/{f}/{self.dt_string}_{f}.csv'
+                df.to_csv(path, index=False)
+                print(f'Archivo de {f} guardado en {path}')
+                self.gdlines[i+2] = path
+        return self.gdlines[1:]
 
-# # print(get_last_file(path_f4))
-from google.cloud import bigquery
+def load_text_file():
+        config = open('config/get_data_config.txt', 'r', encoding='ISO-8859-1')
+        gdlines = [line.strip() for line in config.readlines()]
+        config.close()
+        return gdlines
 
-import google.auth
+def get_last_file(path):
+    list_archive = listdir(path)
+    date_archive = [ datetime.strptime(name[0:6], '%y%m%d') for name in list_archive]
+    last = max(date_archive)
+    indice = list_archive[date_archive.index(last)]
+    hoy =  datetime.now().strftime('%y%m%d')
+    if last.strftime('%y%m%d') == hoy:
+        return f'{path}/{indice}', True
+    else:
+        return f'{path}/{indice}', False
 
+def init_commandline():
+    dtlkcon = DTLKCONTROL()
+    gdlines = dtlkcon.update_files()
 
-
-credentials, project = google.auth.default()
-bqc = bigquery.Client(credentials=credentials)
-query = """
-    SELECT *
-    FROM `txd-ops-control-faco-dtlk.f4_gco.f4tipo`
-"""
-df = bqc.query(query).to_dataframe()
-print(df)
+if __name__=='__main__':
+    init_commandline()

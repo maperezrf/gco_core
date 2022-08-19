@@ -20,13 +20,13 @@ class CF11_CD():
         self.set_index() # Set index 
         self.convert_dtypes() # Convert data types 
         self.set_dates() # Set date columns 
-        self.cierres = CierresF11(self.data[5])
+        self.cierres = CierresF11(self.data[4])
         self.cierres.set_fcols(self.fcols, self.pcols)
         self.cierres.starting([self.fcols[4],self.pcols[2], self.pcols[4]]) 
         
         self.test_call_selection() # Select test call based on the year 
         self.cierres.finals()
-        self.data[5] = self.cierres.ica.get_db()
+        self.data[4] = self.cierres.ica.get_db()
         self.print_results() # Print result in command line 
         self.save_selection() 
 
@@ -46,7 +46,7 @@ class CF11_CD():
         self.data[1].loc[:,'qf04_ship'] = pd.to_numeric(self.data[1].loc[:,'qf04_ship'])
         self.data[1].loc[:,'fecha_registro'] = pd.to_datetime(self.data[1].loc[:,'fecha_registro'].str.replace('UTC', ''))
         self.data[2].loc[:,'trf_rec_to_date'] = pd.to_numeric(self.data[2].loc[:,'trf_rec_to_date'])
-        self.data[5].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[5].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
+        self.data[4].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[4].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
 
 
     def set_dates(self):
@@ -71,8 +71,8 @@ class CF11_CD():
         self.data[1]['aa creacion'] = self.data[1]['fecha_registro'].dt.strftime('%Y')
 
     def set_index(self) -> None:
-        self.data[5] = self.data[5].reset_index()
-        self.data[5].rename(columns={'index': self.pcols[0]}, inplace=True)
+        self.data[4] = self.data[4].reset_index()
+        self.data[4].rename(columns={'index': self.pcols[0]}, inplace=True)
 
     def multi_test(self, test_id, tlist):
         for tlist_desc in tlist:
@@ -137,19 +137,19 @@ class CF11_CD():
         self.multi_test(1, lista_f4) # F4 
         self.multi_test(2, lista_f5) # F5 
         self.multi_test(3, lista_kpi) # KPI
-        self.single_test(4, lista_refact) # Refacturación 
+        # self.single_test(4, lista_refact) # Refacturación 
 
     def save_test(self):
         dt_string = datetime.now().strftime('%y%m%d-%H%M')
-        self.data[5].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[5]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[5]}', index=False, encoding='utf-8') # Guarda el archivo 
-        bdcia = self.data[5].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
+        self.data[4].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[4]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[4]}', index=False, encoding='utf-8') # Guarda el archivo 
+        bdcia = self.data[4].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
         bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['ctech_key','prd_upc'],validate='many_to_one')
         bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
         bdcia4 = bdcia3.merge(self.data[3], how='left',left_on=[self.fcols[3]], right_on=['entrada'],validate='many_to_one')
         bdcia5 = bdcia4.merge(self.data[3], how='left',left_on=[self.fcols[4]], right_on=['entrada'],validate='many_to_one')
         #bdcia6 = bdcia4.merge(refact, how='left',left_on=[fcols[4]], right_on=['f12cod'],validate='many_to_one')
-        path = f'output/cierres_f11/cd/{dt_string}-{self.names[5]}-all.xlsx'
-        bdcia5.to_excel(path, sheet_name=f'{dt_string}_{self.names[5]}',index=False) 
+        path = f'output/cierres_f11/cd/{dt_string}-{self.names[4]}-all.xlsx'
+        bdcia5.to_excel(path, sheet_name=f'{dt_string}_{self.names[4]}',index=False) 
         return path
 
     def save_selection(self):
@@ -162,9 +162,9 @@ class CF11_CD():
             print('Ok')
 
     def print_results(self):
-        print(self.data[5].groupby('gco_dup')[self.pcols[3]].sum())
-        print(self.data[5].groupby('gco_dupall')[self.pcols[3]].sum())
-        res = self.data[5].groupby([self.pcols[1],'GCO']).agg({self.pcols[3]:['sum', 'size']}).sort_values(by=[self.pcols[1],(self.pcols[3],'sum')], ascending=False)
+        print(self.data[4].groupby('gco_dup')[self.pcols[3]].sum())
+        print(self.data[4].groupby('gco_dupall')[self.pcols[3]].sum())
+        res = self.data[4].groupby([self.pcols[1],'GCO']).agg({self.pcols[3]:['sum', 'size']}).sort_values(by=[self.pcols[1],(self.pcols[3],'sum')], ascending=False)
         print(res)
 
 
