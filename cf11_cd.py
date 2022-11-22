@@ -125,7 +125,7 @@ class CF11_CD():
 
     def test_call_22(self):
         lista_f3 = [['cierre por f3 devuelto a proveedor', '2022']]
-        lista_f4 = [['f4 en revision', '2022'],['cierre por f4 cobrado a terceros', '2022'], ['f4 de merma', '2022'], 
+        lista_f4 = [['f4 en revision', '2022'],['cierre por f4 cobrado a terceros', '2022'], ['f4 merma', '2022'], 
                     ['entregado a cliente por politica (fast track)', '2022'], ['entregado a cliente', '2022']] 
         lista_f5 = [['producto en tienda', '2022'], ['cierre con f5 administrativo cd', '2022'], 
         ['producto compensado con ctverde-recibido', '2022'], ['producto compensado con tienda - recibido', '2022']]

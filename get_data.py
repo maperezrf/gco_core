@@ -1,5 +1,4 @@
 # Librerías
-import imp
 import pandas as pd
 from datetime import datetime
 from etl_core.cl_cleaning import CleaningText as ct 
@@ -83,9 +82,7 @@ class GetData():
 
         print('Eliminando columnas no requeridas')
         for i in tqdm(range(len(self.lista))): 
-            print(self.lista[i].columns)
             drop_except(self.lista[i],self.dfs_colsreq[i])
-            print(self.lista[i].columns)
 
         # Limpiar texto
         print('Limpiando texto en columnas')
@@ -108,14 +105,12 @@ class GetData():
         self.lista[1].drop_duplicates(['ctech_key', 'prd_upc'], inplace=True)
         self.lista[2].drop_duplicates(['trf_number','prd_upc'], inplace=True)
         self.lista[3].drop_duplicates(['entrada'], inplace=True)
-        # self.lista[4].drop_duplicates(['f12cod', 'orden_de_compra'], inplace=True)
 
         # Eliminar registros con #s de F nulos 
         self.lista[0] = self.lista[0][self.lista[0].nro_devolucion.notna()]
         self.lista[1] = self.lista[1][self.lista[1].ctech_key.notna()]
         self.lista[2] = self.lista[2][self.lista[2].trf_number.notna()]
         self.lista[3] = self.lista[3][self.lista[3].entrada.notna()]
-        # self.lista[4] = self.lista[4][self.lista[4].f12cod.notna()]
 
     def save_files(self, folder):
         # Guardar archivos 
@@ -167,8 +162,8 @@ class GetData():
                 self.save_files('cierres_f11/tienda')
 
             elif data_select =='4': # CF11s Tienda 2021 
-                cf11_tienda_colsreq = ['folio_servicio_tecnico','ean','local_envio', 'estado_servicio_tecnico', 'producto', 'propietario', 'tipo_servicio_f11','cantidad_f11', 'costo_promedio', 'f', 'motivo_cierre']
-                cf11_tienda_fnum = ['folio_servicio_tecnico', 'ean', 'f','local_envio' ]
+                cf11_tienda_colsreq = ['folio_servicio_tecnico','ean','sku_(numero_de_producto)', 'local_envio', 'estado_servicio_tecnico', 'producto', 'propietario', 'tipo_servicio_f11','cantidad_f11', 'costo_promedio', 'f', 'motivo_cierre']
+                cf11_tienda_fnum = ['folio_servicio_tecnico', 'ean', 'sku_(numero_de_producto)', 'f','local_envio' ]
                 cf11_tienda_num = [ 'costo_promedio', 'cantidad_f11'] 
                 cf11_tienda_text = ['motivo_cierre', 'propietario', 'estado_servicio_tecnico', 'tipo_servicio_f11']
                 self.update_lists('cf11_tienda_21', cf11_tienda_colsreq, cf11_tienda_fnum, cf11_tienda_num, cf11_tienda_text)

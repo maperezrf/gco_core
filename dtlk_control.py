@@ -1,6 +1,5 @@
 from  os import  listdir
 from datetime import datetime
-from winreg import QueryValueEx
 from gcloud import GCLOUD
 from datetime import datetime
 
@@ -11,6 +10,7 @@ class DTLKCONTROL():
     tables = ['f4_gco.f4_productos', 'f5_reports.f5_cf11']
 
     def __init__(self) -> None:
+        print('control')
         self.gcp = GCLOUD()
         self.gdlines = load_text_file()
 
@@ -26,7 +26,7 @@ class DTLKCONTROL():
                 df = self.gcp.get_query(query)
                 path = f'{self.gdlines[0]}/{f}/{self.dt_string}_{f}.csv'
                 df.to_csv(path, index=False)
-                print(f'Archivo de {f} guardado en {path}')
+                print(f'-- Archivo de {f} guardado en {path}')
                 self.gdlines[i+2] = path
         return self.gdlines[1:]
 

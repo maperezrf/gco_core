@@ -8,14 +8,14 @@ pd.set_option('float_format', '{:,.2f}'.format)
 
 # Cargar data
 data = []
-names = ['f3', 'f4', 'f5', 'kpi','refact', 'cf11_tienda_21']
+names = ['f3', 'f4', 'f5', 'kpi', 'cf11_tienda_21']
 
 pre_file = input('Ingrese prefijo de archivos: ')
 
 for name in names:
     data.append(pd.read_csv(f'input/cierres_f11/tienda/{pre_file}{name}.csv', sep=';', dtype='object'))
 
-f3, f4, f5, kpi, refact, c11t = data[0],data[1],data[2],data[3],data[4],data[5]
+f3, f4, f5, kpi, c11t = data[0],data[1],data[2],data[3],data[4]
 
 # Variables 
 dt_string = datetime.now().strftime('%y%m%d-%H%M')
