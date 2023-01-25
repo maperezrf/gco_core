@@ -1,6 +1,6 @@
 from  os import  listdir
 from datetime import datetime
-from gcloud import GCLOUD
+# from gcloud import GCLOUD
 from datetime import datetime
 
 class DTLKCONTROL():
@@ -11,7 +11,7 @@ class DTLKCONTROL():
 
     def __init__(self) -> None:
         print('control')
-        self.gcp = GCLOUD()
+        # self.gcp = GCLOUD()
         self.gdlines = load_text_file()
 
     def update_files(self):

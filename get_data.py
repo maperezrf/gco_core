@@ -58,21 +58,23 @@ class GetData():
         kpi_text = ['tip0_trabajo']
         self.lista_text = [f3_text, f4_text, f5_text, kpi_text]
 
-    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, db_dir):
+    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, db_dir, ro, en):
         # Cargar data
         f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
         f4 = pd.read_csv(f4_dir, sep=',', dtype='object')
         f5 = pd.read_csv(f5_dir, sep=',', dtype='object')
         kpi = pd.read_csv(kpi_dir, sep=';', dtype='object')
         db = pd.read_csv(db_dir, sep=';', dtype='object')
+        ro = pd.read_csv(ro, sep=';', dtype='object')
+        en = pd.read_csv(en, sep=';', dtype='object')
 
         # Inicializar estructuras según tipo análisis
-        self.lista =[f3, f4, f5, kpi, db]
+        self.lista =[f3, f4, f5, kpi, db, ro, en]
 
     def get_data(self):
         # Normailzar headers
         print('Normalizando encabezados')
-        for item in tqdm(self.lista): 
+        for item in tqdm(self.lista):
             ct.norm_header(item)
 
         # Eliminar columnas no requeridas
@@ -142,20 +144,20 @@ class GetData():
                 self.get_data()
                 self.save_files('cierres_f11/cd')
 
-            elif data_select=='2': # CF11s 2021 
+            elif data_select=='2': # CF11s 2021
                 cf11_21_colsreq  = ['nfolio','f12', 'prd_upc', 'sku' , 'qproducto', 'xobservacion', 'xservicio','costo_total', 'estado_f11', 'status_final', 'f3', 'f4', 'f5', 'f11_nuevo', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'tranf_electro_factura', 'nota', 'ro','mc(f12)', 'ee(f11)'] # Para cd 2021 
                 cf11_21_fnum = ['nfolio','f12', 'prd_upc', 'sku', 'f3', 'f4', 'f5', 'f11_nuevo']
                 cf11_21_num = [ 'qproducto', 'costo_total'] 
                 cf11_21_text = ['xobservacion', 'status_final', 'xservicio', 'estado_f11', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'tranf_electro_factura', 'nota']
                 self.update_lists('cf11_cd_21', cf11_21_colsreq, cf11_21_fnum, cf11_21_num, cf11_21_text)
                 self.get_data()
-                self.lista[4] = self.lista[4].rename(columns={'f11':'nfolio'}) # Only for 2021 
+                self.lista[4] = self.lista[ 4].rename(columns={'f11':'nfolio'}) # Only for 2021 
                 self.save_files('cierres_f11/cd')
 
             elif data_select =='3': # CF11s Tienda 2020 
                 cf11_tienda_colsreq = ['nfolio','prd_upc', 'estado_f11', 'producto', 'propietario','qproducto', 'total_costo_promedio', 'f', 'motivo']
                 cf11_tienda_fnum = ['nfolio', 'prd_upc', 'f']
-                cf11_tienda_num = [  'qproducto','total_costo_promedio', 'estado_f11'] 
+                cf11_tienda_num = ['qproducto','total_costo_promedio', 'estado_f11'] 
                 cf11_tienda_text = ['motivo', 'propietario']
                 self.update_lists('cf11_tienda_20', cf11_tienda_colsreq, cf11_tienda_fnum, cf11_tienda_num, cf11_tienda_text)
                 self.get_data()
@@ -195,9 +197,9 @@ class GetData():
 def menu_gd():
     print('------------------    Procesar datos')
     print('1. Cierres de F11s CD auditoria')
-    print('2. Cierres de F11s CD 2022')
+    print('2. Cierres de F11s CD 2023')
     print('3. Cierres de F11s Tienda - 2020')
-    print('4. Cierres de F11s Tienda - 2021')
+    print('4. Cierres de F11s Tienda - 2023')
     print('5. Cierres de NCs 2020')
     print('6. Cierres de NCs 2021')
     print('7. Regresar')
@@ -205,9 +207,11 @@ def menu_gd():
 
 def init_commandline():
     dtlkcon = DTLKCONTROL()
-    gdlines = dtlkcon.update_files()
+    # gdlines = dtlkcon.update_files()
+    gdlines = dtlkcon.gdlines
+    print(gdlines)
     gd = GetData()
-    gd.load_data(gdlines[0], gdlines[1], gdlines[2], gdlines[3], gdlines[4])
+    gd.load_data(gdlines[1], gdlines[2], gdlines[3], gdlines[4], gdlines[5], gdlines[6], gdlines[7])
     gd.run_gd()
 
 if __name__=='__main__':
