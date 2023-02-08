@@ -80,7 +80,7 @@ class InternalControlAnalysis:
         bdquery_res = bdquery[bdquery[col].notna()]
         return bdquery_res
     
-    def get_fnan_cols(self, bdquery, cols, numf):
+    def get_fnan_cols(self, bdquery, cols, numf, ro = True):
         """
         Get rows with nan in F value
         :param bdquery: dataframe to identify duplicates
@@ -91,7 +91,10 @@ class InternalControlAnalysis:
         #fnan.to_csv(f'output/{self.dt_string}-fnan.csv', sep=';', decimal=',', index=False) 
         inf5 = fnan[self.index_column].values
         self.db.loc[inf5, 'GCO'] = 'N' + numf
-        self.db.loc[inf5, 'Comentario GCO'] = 'Registro sin nro. de ' + numf
+        if ro == True:
+            self.db.loc[inf5, 'Comentario GCO'] = 'Registro sin nro. de ' + numf
+        else:
+            pass
         bdquery_res = bdquery[bdquery[cols].notna().any(1)]
         return bdquery_res
 

@@ -27,8 +27,8 @@ def menu_cl():
     print('  3. Regresar al menú')
 
 def menu_cf11():
-    print('  1. Cierres de F11 CD 2022')
-    print('  2. Cierres de F11 Tienda 2022')
+    print('  1. Cierres de F11 CD 2023')
+    print('  2. Cierres de F11 Tienda 2023')
     print('  3. Regresar al menú')
 
 def menu_cnc():
@@ -57,10 +57,10 @@ while select_var!='4':
         menu_cf11()
         sv_cf11= input('  Rta: ')
         if sv_cf11=='1':
-            names = ['f3', 'f4', 'f5', 'kpi','cf11_cd_21']
+            names = ['f3', 'f4', 'f5', 'kpi','ro','en','cf11_cd_21']
             fcols = ['f3','f4','f5','nfolio','f12']
             pcols = ['indice_cf11','status_final', 'prd_upc', 'costo_total', 'qproducto']
-            cf11 = CF11_CD('2022', names, fcols, pcols)
+            cf11 = CF11_CD('2023', names, fcols, pcols)
             cf11.run_test()
         elif sv_cf11=='2':
             exec(open('cf11_tienda_21.py').read())

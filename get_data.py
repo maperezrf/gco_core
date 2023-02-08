@@ -14,7 +14,7 @@ class GetData():
 
     def __init__(self) -> None:
         self.lista = []
-        self.names = ['f3', 'f4', 'f5', 'kpi']
+        self.names = ['f3', 'f4', 'f5', 'kpi', 'ro', 'en']
         self.dfs_colsreq = []
         self.lista_fnum = []
         self.lista_num = []
@@ -31,7 +31,10 @@ class GetData():
         f4_colsreq = ['ctech_key', 'ctipo', 'cestado','fecha_registro', 'xdestino', 'prod_cat_id','prd_upc', 'qf04_ship','nformulario']
         f5_colsreq = ['trf_number', 'trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec','trf_status', 'prd_upc', 'trf_rec_to_date', 'total_cost']
         kpi_colsreq = ['index', 'tip0_trabajo', 'entrada','fecha_paletiza', 'aaaa_paletiza']
-        self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq]
+        ro_colsreq = ['ro', 'estado_ro']
+        en_colsreq = ['centrada', 'fentrada']
+        
+        self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq, ro_colsreq, en_colsreq]
 
     def set_colsnum(self):
         # Columnas con datos númericos 
@@ -40,36 +43,39 @@ class GetData():
         f4_fnum = ['ctech_key', 'prd_upc', 'nformulario']
         f5_fnum = ['trf_number', 'prd_upc']
         kpi_fnum = ['entrada']
+        ro_fnum = ['ro']
+        en_fnum = ['centrada']
 
         # Costos y cantidades 
         f3_num = ['cantidad']
         f4_num = ['qf04_ship']
         f5_num = ['trf_rec_to_date', 'total_cost']
 
-        self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum]
-        self.lista_num= [f3_num, f4_num, f5_num,'kpi']
+        self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum, ro_fnum, en_fnum]
+        self.lista_num= [f3_num, f4_num, f5_num]
 
     def set_colstext(self):
         # Texto 
         f3_text = ['linea', 'descripcion6']
         f4_text = ['cestado','xdestino', 'prod_cat_id']
         f5_text = ['trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec', 'trf_status']
-
         kpi_text = ['tip0_trabajo']
-        self.lista_text = [f3_text, f4_text, f5_text, kpi_text]
+        ro_text = ['estado_ro']
+        en_text = []
+        self.lista_text = [f3_text, f4_text, f5_text, kpi_text, ro_text, en_text]
 
-    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, db_dir, ro, en):
+    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, ro, en, db_dir):
         # Cargar data
         f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
         f4 = pd.read_csv(f4_dir, sep=',', dtype='object')
-        f5 = pd.read_csv(f5_dir, sep=',', dtype='object')
+        f5 = pd.read_csv(f5_dir, sep=';', dtype='object')
         kpi = pd.read_csv(kpi_dir, sep=';', dtype='object')
-        db = pd.read_csv(db_dir, sep=';', dtype='object')
         ro = pd.read_csv(ro, sep=';', dtype='object')
         en = pd.read_csv(en, sep=';', dtype='object')
+        db = pd.read_csv(db_dir, sep=';', dtype='object')
 
         # Inicializar estructuras según tipo análisis
-        self.lista =[f3, f4, f5, kpi, db, ro, en]
+        self.lista =[f3, f4, f5, kpi, ro, en, db]
 
     def get_data(self):
         # Normailzar headers
@@ -99,7 +105,7 @@ class GetData():
         # Convertir a número cantidades y costos 
         print('Convirtiendo a número parte 2')
         for i, item in enumerate(tqdm(self.lista_num)):
-            if (i!=3)&(i!=4): 
+            if (i!=3)&(i!=4)&(i!=5): 
                 self.lista[i].loc[:, item] = self.lista[i].loc[:, item].apply(ct.clean_num)
 
         # Eliminar filas duplicados 
@@ -209,10 +215,9 @@ def init_commandline():
     dtlkcon = DTLKCONTROL()
     # gdlines = dtlkcon.update_files()
     gdlines = dtlkcon.gdlines
-    print(gdlines)
     gd = GetData()
     gd.load_data(gdlines[1], gdlines[2], gdlines[3], gdlines[4], gdlines[5], gdlines[6], gdlines[7])
     gd.run_gd()
 
-if __name__=='__main__':
-    init_commandline()
+# if __name__=='__main__':
+#     init_commandline()

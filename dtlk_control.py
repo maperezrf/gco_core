@@ -10,7 +10,6 @@ class DTLKCONTROL():
     tables = ['f4_gco.f4_productos', 'f5_reports.f5_cf11']
 
     def __init__(self) -> None:
-        print('control')
         # self.gcp = GCLOUD()
         self.gdlines = load_text_file()
 

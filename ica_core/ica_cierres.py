@@ -84,11 +84,37 @@ class CierresF11:
                 pgdimdyear = self.ica.get_lvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA',commenty)
             elif yyyy =='2021':
                 pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA', commenty)
+            elif yyyy =='2023':
+                pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2023,1,13), 'NAA', commenty)
             iokkpid = pgdimdyear[self.pcols[0]].values
             self.ica.update_db(iokkpid,'GCO', 'OKK')
             self.ica.update_db(iokkpid,'Comentario GCO', 'Coincidencia exacta (F12|F11)')
             self.ica.get_okk_dup(iokkpid, 'Comentario GCO', '(F12|F11)')
             self.ica.get_dup_i(iokkpid, '(F12|F11)')
+
+    def ro_verify(self, en, ro, status, yyyy, commenty):
+            df1 = self.db[self.db[self.pcols[1]]==status]
+            ro_index = ro.loc[ro['estado_ro'] == 'receiving verified']['ro'].unique()
+            df2= self.ica.get_fnan_cols(df1, ['ro'], 'ro', False)
+            df3 = df2.loc[df2['ro'].isin(ro_index)]
+            if df3.empty == False:
+                index_ne_en_di = self.ica.get_notfound( df3, en, ['ro'], ['centrada'], 'centrada', 'ro')
+                pgdim1 = pd.merge(df3, en, left_on=['ro'], right_on=['centrada'])
+                pgdim2 = pd.merge(df3.loc[index_ne_en_di], en, left_on=['ro'], right_on=['centrada'])
+                lpgdi = [pgdim1, pgdim2]
+                pgdim = pd.concat(lpgdi, axis=0)
+                pgdimdyear = '' 
+                if yyyy == '2022': 
+                    pgdimdyear = self.ica.get_lvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA',commenty)
+                elif yyyy =='2021':
+                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA', commenty)
+                elif yyyy =='2023':
+                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fentrada', pd.Timestamp(2023,1,13), 'NAA', commenty)
+                iokend = pgdimdyear[self.pcols[0]].values
+                self.ica.update_db(iokend,'GCO', 'OKK')
+                self.ica.update_db(iokend,'Comentario GCO', 'Coincidencia exacta (ro)')
+                self.ica.get_okk_dup(iokend, 'Comentario GCO', '(ro)')
+                self.ica.get_dup_i(iokend, '(ro)')
             
     def refact_verify(self, refact, status):
         df1 = self.db[self.db[self.pcols[1]]==status]
