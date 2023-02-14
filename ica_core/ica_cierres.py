@@ -59,9 +59,9 @@ class CierresF11:
             if df4.empty ==False: 
                 df5 = self.ica.get_diffvalue(df4, 'trf_status', '5', 'NRE', 'Registro con estado diferente a recibido') # TODO Update datalake  
                 #df6 = self.ica.get_equalvalue(df5, 'motivo_discrepancia', 'f5 no recibido', 'MDI', 'Registro con motivo de disc: F5 no recibido')
-                df7 = self.ica.get_diffvalue(df5, 'year_res', yyyy, 'NAA', f'Registro con año de reserva diferente a {yyyy}')
+                # df7 = self.ica.get_diffvalue(df5, 'year_res', yyyy, 'NAA', f'Registro con año de reserva diferente a {yyyy}')
                 comment = 'Cantidad de las F11s de un F5 > cantidad del F5'
-                df8 = self.ica.get_diffqty_pro(df7,  self.pcols[4], 'trf_rec_to_date', self.fcols[3], 'trf_number', comment) # TODO Update datalake  
+                df8 = self.ica.get_diffqty_pro(df5,  self.pcols[4], 'trf_rec_to_date', self.fcols[3], 'trf_number', comment) # TODO Update datalake  
                 iokf5 = df8[self.pcols[0]].values
                 self.ica.update_db(iokf5, 'GCO','OKK')
                 self.ica.update_db(iokf5, 'Comentario GCO', 'Coincidencia exacta F5+UPC+QTY')
@@ -85,12 +85,15 @@ class CierresF11:
             elif yyyy =='2021':
                 pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA', commenty)
             elif yyyy =='2023':
-                pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2023,1,13), 'NAA', commenty)
-            iokkpid = pgdimdyear[self.pcols[0]].values
-            self.ica.update_db(iokkpid,'GCO', 'OKK')
-            self.ica.update_db(iokkpid,'Comentario GCO', 'Coincidencia exacta (F12|F11)')
-            self.ica.get_okk_dup(iokkpid, 'Comentario GCO', '(F12|F11)')
-            self.ica.get_dup_i(iokkpid, '(F12|F11)')
+                if status == 'cierre por producto guardado despues de inventario':
+                    pgdimdyear = self.ica.get_mvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2023,1,13), 'NAA', "Recibido con fecha anterior al 13/01/2023")
+                else :
+                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2023,1,13), 'NAA', "Recibido con fecha posterior al 13/01/2023")
+                iokkpid = pgdimdyear[self.pcols[0]].values
+                self.ica.update_db(iokkpid,'GCO', 'OKK')
+                self.ica.update_db(iokkpid,'Comentario GCO', 'Coincidencia exacta (F12|F11)')
+                self.ica.get_okk_dup(iokkpid, 'Comentario GCO', '(F12|F11)')
+                self.ica.get_dup_i(iokkpid, '(F12|F11)')
 
     def ro_verify(self, en, ro, status, yyyy, commenty):
             df1 = self.db[self.db[self.pcols[1]]==status]

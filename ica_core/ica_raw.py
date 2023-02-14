@@ -245,6 +245,20 @@ class InternalControlAnalysis:
         self.db.loc[imvalue, 'Comentario GCO'] = comment
         bdquery_res = bdquery[bdquery[valuecol]<value]
         return bdquery_res
+
+    def get_mvalue(self, bdquery, valuecol, value, note, comment):
+        """ 
+        Get rows with different value 
+        :param bdquery: dataframe to query
+        :param valuecol: (string) value column 
+        :param value: (string) value of comparison 
+        """
+        equalvalue = bdquery[bdquery[valuecol]<=value]
+        imvalue = equalvalue[self.index_column].values
+        self.db.loc[imvalue, 'GCO'] = note
+        self.db.loc[imvalue, 'Comentario GCO'] = comment
+        bdquery_res = bdquery[bdquery[valuecol]>value]
+        return bdquery_res
     
     def get_lvalue(self, bdquery, valuecol, value, note, comment):
         """ 

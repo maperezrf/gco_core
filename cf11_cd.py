@@ -189,7 +189,7 @@ class CF11_CD():
     def print_results(self):
         print(self.data[7].groupby('gco_dup')[self.pcols[3]].sum())
         print(self.data[7].groupby('gco_dupall')[self.pcols[3]].sum())
-        res = self.data[7].groupby([self.pcols[1],'GCO']).agg({self.pcols[3]:['sum', 'size']}).sort_values(by=[self.pcols[1],(self.pcols[3],'sum')], ascending=False)
+        res = self.data[7].groupby([self.pcols[1],'Comentario GCO']).agg({self.pcols[3]:['sum', 'size']}).sort_values(by=[self.pcols[1],(self.pcols[3],'sum')], ascending=False)
         print(res)
 
 
