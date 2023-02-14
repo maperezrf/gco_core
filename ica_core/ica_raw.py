@@ -116,17 +116,18 @@ class InternalControlAnalysis:
         self.db.loc[ine, 'Comentario GCO'] = f'No coincide {llave}'
         return ine
     
-    def get_diffqty(self, bdquery, qty1col, qty2col, numf):
+    def get_diffqty(self, bdquery, qty1col, qty2col, comment):
         """ 
         Get rows with different quantity
         :param bdquery: dataframe to identify different quantity
         :param qty1col: (string) quantity 1 
         :param qty2col: (string) quantity 2 
-        :param numf: (string) 
+        :param comment: (string) 
         """
         dc = bdquery[bdquery[qty1col]!=bdquery[qty2col]] # Registros con cantidades diferentes
         idc = dc[self.index_column].values
         self.db.loc[idc, 'GCO' ] = 'NCC'
+        self.db.loc[idc, 'Comentario GCO' ] = comment
         bdquery_res = bdquery[bdquery[qty1col]==bdquery[qty2col]]
         return bdquery_res
     
@@ -265,7 +266,7 @@ class InternalControlAnalysis:
         self.db.loc[inotinlist, 'GCO'] = note
         self.db.loc[inotinlist, 'Comentario GCO'] = comment
         bdquery_res = bdquery[bdquery[valuecol].isin(lista)]
-        return bdquery_res, list(notinlist3['loc_rec'])
+        return bdquery_res#, list(notinlist3['loc_rec'])
     
         #-----------------------------------------------------
     def dupall(self, status):

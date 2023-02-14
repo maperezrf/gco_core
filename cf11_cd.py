@@ -16,34 +16,18 @@ class CF11_CD():
         self.etl = ETL('input/cierres_f11/cd/')
 
     def run_test(self):
-
         self.data = self.etl.load_data(self.names) # Load files 
         self.set_index() # Set index 
         self.convert_dtypes() # Convert data types 
         self.set_dates() # Set date columns 
-        self.cierres = CierresF11(self.data[6])
+        self.cierres = CierresF11(self.data[7])
         self.cierres.set_fcols(self.fcols, self.pcols)
         self.cierres.starting([self.fcols[4],self.pcols[2], self.pcols[4]]) 
         self.test_call_selection() # Select test call based on the year 
         self.cierres.finals()
-        self.data[6] = self.cierres.ica.get_db()
+        self.data[7] = self.cierres.ica.get_db()
         self.print_results() # Print result in command line 
-        self.save_selection()      
-
-
-        # self.data = self.etl.load_data(self.names) # Load files 
-        # self.set_index() # Set index 
-        # self.convert_dtypes() # Convert data types 
-        # self.set_dates() # Set date columns 
-        # self.cierres = CierresF11(self.data[4])
-        # self.cierres.set_fcols(self.fcols, self.pcols)
-        # self.cierres.starting([self.fcols[4],self.pcols[2], self.pcols[4]]) 
-        
-        # self.test_call_selection() # Select test call based on the year 
-        # self.cierres.finals()
-        # self.data[4] = self.cierres.ica.get_db()
-        # self.print_results() # Print result in command line 
-        # self.save_selection() 
+        self.save_selection() 
 
     def test_call_selection(self):
         if self.year == '2020':
@@ -65,7 +49,7 @@ class CF11_CD():
         self.data[2].loc[:,'trf_rec_to_date'] = pd.to_numeric(self.data[2].loc[:,'trf_rec_to_date'])
         self.data[3]['fecha_paletiza'] = pd.to_datetime(self.data[3]['fecha_paletiza'])
         self.data[5]['fentrada'] = pd.to_datetime(self.data[5]['fentrada'])
-        self.data[6].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[6].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
+        self.data[7].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[7].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
 
 
     def set_dates(self):
@@ -89,8 +73,8 @@ class CF11_CD():
         self.data[1]['aa creacion'] = self.data[1]['fecha_registro'].dt.strftime('%Y')
 
     def set_index(self) -> None:
-        self.data[6] = self.data[6].reset_index()
-        self.data[6].rename(columns={'index': self.pcols[0]}, inplace=True)
+        self.data[7] = self.data[7].reset_index()
+        self.data[7].rename(columns={'index': self.pcols[0]}, inplace=True)
 
     def multi_test(self, test_id, tlist):
         for tlist_desc in tlist:
@@ -107,6 +91,8 @@ class CF11_CD():
             self.cierres.kpi_verify(self.data[3], type_data[0], type_data[1], type_data[2])
         elif test_id == 4: 
             self.cierres.ro_verify(self.data[5], self.data[4], type_data[0], type_data[1], type_data[2])
+        elif test_id == 5: 
+            self.cierres.f11_verify(self.data[6], type_data[0])
 
     def test_call_20(self):
         lista_f4 = [ ['f4 de merma', '2021'], ['cierre x f4 cobrado a terceros', '2021'], 
@@ -165,17 +151,19 @@ class CF11_CD():
         ['producto compensado con ctverde-recibido', '2023'], ['cierre por producto compensado con tienda-recibido', '2023']]
         lista_kpi = [['cierre por producto guardado despues de inventario', '2023', 'Recibido con fecha anterior al 13/01/2023'], 
         ['cierre por producto guardado antes de inventario', '2023', 'Recibido con fecha posterior al 13/01/2023']]
+        lista_f11 = ['cierre por nuevo f11 en estado despachado']
 
         self.multi_test(0, lista_f3) # F3 
         self.multi_test(1, lista_f4) # F4 
         self.multi_test(2, lista_f5) # F5 
         self.multi_test(3, lista_kpi) # KPI
         self.multi_test(4, lista_kpi) # ro 
+        self.single_test(5, lista_f11) # ro 
 
     def save_test(self):
         dt_string = datetime.now().strftime('%y%m%d-%H%M')
-        self.data[6].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[4]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[4]}', index=False, encoding='utf-8') # Guarda el archivo 
-        bdcia = self.data[6].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
+        self.data[7].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[4]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[4]}', index=False, encoding='utf-8') # Guarda el archivo 
+        bdcia = self.data[7].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
         bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['ctech_key','prd_upc'],validate='many_to_one')
         bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
         bdcia4 = bdcia3.merge(self.data[3], how='left',left_on=[self.fcols[3]], right_on=['entrada'],validate='many_to_one')
@@ -199,9 +187,9 @@ class CF11_CD():
                 flag = False
 
     def print_results(self):
-        print(self.data[6].groupby('gco_dup')[self.pcols[3]].sum())
-        print(self.data[6].groupby('gco_dupall')[self.pcols[3]].sum())
-        res = self.data[6].groupby([self.pcols[1],'GCO']).agg({self.pcols[3]:['sum', 'size']}).sort_values(by=[self.pcols[1],(self.pcols[3],'sum')], ascending=False)
+        print(self.data[7].groupby('gco_dup')[self.pcols[3]].sum())
+        print(self.data[7].groupby('gco_dupall')[self.pcols[3]].sum())
+        res = self.data[7].groupby([self.pcols[1],'GCO']).agg({self.pcols[3]:['sum', 'size']}).sort_values(by=[self.pcols[1],(self.pcols[3],'sum')], ascending=False)
         print(res)
 
 

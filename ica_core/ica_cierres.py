@@ -115,6 +115,17 @@ class CierresF11:
                 self.ica.update_db(iokend,'Comentario GCO', 'Coincidencia exacta (ro)')
                 self.ica.get_okk_dup(iokend, 'Comentario GCO', '(ro)')
                 self.ica.get_dup_i(iokend, '(ro)')
+
+    def f11_verify(self, f11, status):
+        df1 = self.db[self.db[self.pcols[1]]==status]
+        df2= self.ica.get_fnan_cols(df1, ['f11_nuevo'], 'nro f11 nuevo')
+        if df2.empty == False:
+            df3 = self.ica.get_duplicates( df2,['f11_nuevo'], 'F11')
+            index_ne_en_di = self.ica.get_notfound( df2, f11, ['f11_nuevo'], ['nro_f11'], 'nro_f11', 'nro f11 nuevo')
+            df4 = df2.merge(f11, how = 'left', left_on = 'f11_nuevo', right_on = 'nro_f11')
+            iokf11 = df4.loc[(df4['nro_f11'].notna()) & (df4['estado'].isin(['despachado', 'entrega total'])), self.pcols[0]]
+            self.ica.update_db(iokf11,'GCO', 'OKK')
+            self.ica.update_db(iokf11,'Comentario GCO', 'Coincidencia exacta F11')
             
     def refact_verify(self, refact, status):
         df1 = self.db[self.db[self.pcols[1]]==status]

@@ -14,7 +14,7 @@ class GetData():
 
     def __init__(self) -> None:
         self.lista = []
-        self.names = ['f3', 'f4', 'f5', 'kpi', 'ro', 'en']
+        self.names = ['f3', 'f4', 'f5', 'kpi', 'ro', 'en', 'dv', 'f11']
         self.dfs_colsreq = []
         self.lista_fnum = []
         self.lista_num = []
@@ -28,13 +28,15 @@ class GetData():
     def set_colsreq(self):
         # Declaración de columnas requeridas 
         f3_colsreq = ['nro_devolucion', 'fecha_reserva', 'fecha_envio', 'fecha_anulacion', 'fecha_confirmacion', 'upc', 'sku', 'linea', 'descripcion6', 'cantidad', 'folio_f11', 'folio_f12']
-        f4_colsreq = ['ctech_key', 'ctipo', 'cestado','fecha_registro', 'xdestino', 'prod_cat_id','prd_upc', 'qf04_ship','nformulario']
+        f4_colsreq = ['ctech_key', 'ctipo', 'cestado','fecha_registro', 'xdestino', 'prod_cat_id','prd_upc', 'qf04_ship','nformulario', 'fecha_reserva']
         f5_colsreq = ['trf_number', 'trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec','trf_status', 'prd_upc', 'trf_rec_to_date', 'total_cost']
         kpi_colsreq = ['index', 'tip0_trabajo', 'entrada','fecha_paletiza', 'aaaa_paletiza']
         ro_colsreq = ['ro', 'estado_ro']
         en_colsreq = ['centrada', 'fentrada']
-        
-        self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq, ro_colsreq, en_colsreq]
+        dv_colsreq = ['f11', 'sku_original', 'cant_und_generadas']
+        f11_colsreq = ['nro_f11', 'estado']
+
+        self.dfs_colsreq = [f3_colsreq , f4_colsreq , f5_colsreq , kpi_colsreq, ro_colsreq, en_colsreq, dv_colsreq, f11_colsreq]
 
     def set_colsnum(self):
         # Columnas con datos númericos 
@@ -45,14 +47,17 @@ class GetData():
         kpi_fnum = ['entrada']
         ro_fnum = ['ro']
         en_fnum = ['centrada']
+        dv_fnum = ['f11']
+        f11_fnum = ['nro_f11']
 
         # Costos y cantidades 
         f3_num = ['cantidad']
         f4_num = ['qf04_ship']
         f5_num = ['trf_rec_to_date', 'total_cost']
+        dv_num = ['cant_und_generadas']
 
-        self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum, ro_fnum, en_fnum]
-        self.lista_num= [f3_num, f4_num, f5_num]
+        self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum, ro_fnum, en_fnum, dv_fnum, f11_fnum]
+        self.lista_num= [f3_num, f4_num, f5_num, dv_num]
 
     def set_colstext(self):
         # Texto 
@@ -62,9 +67,12 @@ class GetData():
         kpi_text = ['tip0_trabajo']
         ro_text = ['estado_ro']
         en_text = []
-        self.lista_text = [f3_text, f4_text, f5_text, kpi_text, ro_text, en_text]
+        dv_text = []
+        f11_text = ['estado']        
 
-    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, ro, en, db_dir):
+        self.lista_text = [f3_text, f4_text, f5_text, kpi_text, ro_text, en_text, dv_text, f11_text]
+
+    def load_data(self, f3_dir, f4_dir, f5_dir, kpi_dir, ro, en, db_dir, dv_dir, f11_dir):
         # Cargar data
         f3 = pd.read_csv(f3_dir, sep=';', dtype='object')
         f4 = pd.read_csv(f4_dir, sep=',', dtype='object')
@@ -73,9 +81,12 @@ class GetData():
         ro = pd.read_csv(ro, sep=';', dtype='object')
         en = pd.read_csv(en, sep=';', dtype='object')
         db = pd.read_csv(db_dir, sep=';', dtype='object')
+        dv = pd.read_csv(dv_dir, sep=';', dtype='object')
+        dv['f11'] = dv['NOTAS'].str.extract(r'([1][1]\d{7,})')
+        f11 = pd.read_csv(f11_dir, sep=';', dtype='object') 
 
         # Inicializar estructuras según tipo análisis
-        self.lista =[f3, f4, f5, kpi, ro, en, db]
+        self.lista =[f3, f4, f5, kpi, ro, en,dv, f11, db]
 
     def get_data(self):
         # Normailzar headers
@@ -169,8 +180,8 @@ class GetData():
                 self.get_data()
                 self.save_files('cierres_f11/tienda')
 
-            elif data_select =='4': # CF11s Tienda 2021 
-                cf11_tienda_colsreq = ['folio_servicio_tecnico','ean','sku_(numero_de_producto)', 'local_envio', 'estado_servicio_tecnico', 'producto', 'propietario', 'tipo_servicio_f11','cantidad_f11', 'costo_promedio', 'f', 'motivo_cierre']
+            elif data_select =='4': # CF11s Tienda 2023
+                cf11_tienda_colsreq = ['folio_servicio_tecnico','ean','sku_(numero_de_producto)', 'local_envio', 'estado_servicio_tecnico', 'producto', 'propietario', 'tipo_servicio_f11','cantidad_f11', 'costo_promedio', 'f', 'motivo_cierre', 'fecha_entrega_desde_servicio_tecnico']
                 cf11_tienda_fnum = ['folio_servicio_tecnico', 'ean', 'sku_(numero_de_producto)', 'f','local_envio' ]
                 cf11_tienda_num = [ 'costo_promedio', 'cantidad_f11'] 
                 cf11_tienda_text = ['motivo_cierre', 'propietario', 'estado_servicio_tecnico', 'tipo_servicio_f11']
@@ -216,8 +227,8 @@ def init_commandline():
     # gdlines = dtlkcon.update_files()
     gdlines = dtlkcon.gdlines
     gd = GetData()
-    gd.load_data(gdlines[1], gdlines[2], gdlines[3], gdlines[4], gdlines[5], gdlines[6], gdlines[7])
+    gd.load_data(gdlines[1], gdlines[2], gdlines[3], gdlines[4], gdlines[5], gdlines[6], gdlines[7], gdlines[8], gdlines[9])
     gd.run_gd()
 
-# if __name__=='__main__':
-#     init_commandline()
+if __name__=='__main__':
+    init_commandline()
