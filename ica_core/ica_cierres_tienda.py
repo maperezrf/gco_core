@@ -91,7 +91,7 @@ class CierresF11:
             ne = self.ica.get_notfound( df3, f5, [self.fcols[2], self.pcols[1]], ['trf_number','prd_upc'], 'trf_number', 'F5|UPC|Qty')
             df4 = pd.merge(df3, f5, left_on=[self.fcols[2], self.pcols[1]], right_on=['trf_number','prd_upc'])
             if df4.empty ==False: 
-                df5 = self.ica.get_diffvalue(df4, 'trf_status', 'f', 'NRE', 'Registro con estado diferente a recibido')
+                df5 = self.ica.get_diffvalue(df4, 'trf_status', '5', 'NRE', 'Registro con estado diferente a recibido')
                 #df6 = self.ica.get_equalvalue(df5, 'motivo_discrepancia', 'f5 no recibido', 'MDI', 'Registro con motivo de disc: F5 no recibido')
                 # df7 = self.ica.get_diffvalue(df5, 'year_res', yyyy, 'NAA', f'Registro con año de reserva diferente a {yyyy}')
                 comment = f'La cantidad sumada de los F11s de un F5 es mayor que la cantidad del F5'

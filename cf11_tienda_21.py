@@ -10,7 +10,7 @@ pd.set_option('float_format', '{:,.2f}'.format)
 data = []
 names = ['f3', 'f4', 'f5', 'cf11_tienda_21', 'dv']
 
-pre_file = '230214-1008-' #input('Ingrese prefijo de archivos: ')
+pre_file = input('Ingrese prefijo de archivos: ')
 
 for name in names:
     data.append(pd.read_csv(f'input/cierres_f11/tienda/{pre_file}{name}.csv', sep=';', dtype='object'))
