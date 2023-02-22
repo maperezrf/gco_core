@@ -170,19 +170,22 @@ def clean_f5(f5_input_name, num_f5_files):
 def clean_kpi(kpiname):
     kpi = pd.read_excel(f'input/planillas/{kpiname}.xlsx', dtype=str)
     kpi = ct.norm_header(kpi)
-    kpi.rename(columns={'index': 'ind'}, inplace=True)
     kpi.reset_index(inplace=True)
+    kpi.rename(columns={'index': 'ind'}, inplace=True)
+    kpi['fcreareg'] = pd.to_datetime(kpi['fcreareg'])
+    kpi['fcreareg'] = kpi['fcreareg'].apply(lambda x: x.date())
 
-    kpi['aaaa paletiza'] = kpi['fecha_paletiza'].str.extract('(\d{4})')
-    kpi['entrada'] = kpi.entrada.str.extract('(\d+)', expand=False)
+    kpi['aaaa paletiza'] = kpi['fcreareg'].apply(lambda x :x.strftime("%Y"))
+    kpi['centrada'] = kpi.centrada.str.extract('(\d+)', expand=False)
 
-    du = kpi[kpi.duplicated(subset=['entrada'],keep=False)]
-    td = du[du['aaaa paletiza'] !='2022']
-    kpi.drop(index=td['index'].values, inplace=True)
-    kpi.drop_duplicates(subset=['entrada'], inplace=True) # TODO Cambiar por row_number() SQL
+    kpi.drop_duplicates(['centrada', 'creferen','qcantida', 'fcreareg'], inplace=True)
+    # du = kpi[kpi.duplicated(subset=['centrada'],keep=False)]
+    # td = du[du['aaaa paletiza'] !='2022']
+    # kpi.drop(index=td['index'].values, inplace=True)
+    # kpi.drop_duplicates(subset=['entrada'], inplace=True) # TODO Cambiar por row_number() SQL
 
     # Guardar archivos 
-    du.to_csv(f'output/planillas/{dt_string}-kpi-du.csv', sep=';', decimal=',', index=False)
+    # du.to_csv(f'output/planillas/{dt_string}-kpi-du.csv', sep=';', decimal=',', index=False)
     kpi_path = f'output/planillas/{dt_string}-kpi-output.csv'
     kpi.to_csv(kpi_path, sep=';', decimal=',', index=False)
     print('-- Planilla kpi guardada con éxito!')

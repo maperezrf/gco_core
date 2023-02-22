@@ -47,7 +47,7 @@ class CF11_CD():
         self.data[1].loc[:,'qf04_ship'] = pd.to_numeric(self.data[1].loc[:,'qf04_ship'])
         self.data[1].loc[:,'fecha_registro'] = pd.to_datetime(self.data[1].loc[:,'fecha_registro'].str.replace('UTC', ''))
         self.data[2].loc[:,'trf_rec_to_date'] = pd.to_numeric(self.data[2].loc[:,'trf_rec_to_date'])
-        self.data[3]['fecha_paletiza'] = pd.to_datetime(self.data[3]['fecha_paletiza'])
+        self.data[3]['fcreareg'] = pd.to_datetime(self.data[3]['fcreareg'])
         self.data[5]['fentrada'] = pd.to_datetime(self.data[5]['fentrada'])
         self.data[7].loc[:,[self.pcols[4],self.pcols[3]]] = self.data[7].loc[:,[self.pcols[4],self.pcols[3]]].apply(pd.to_numeric)
 
@@ -134,7 +134,8 @@ class CF11_CD():
         lista_f5 = [['producto en tienda', '2022'], ['cierre con f5 administrativo cd', '2022'], 
         ['producto compensado con ctverde-recibido', '2022'], ['producto compensado con tienda - recibido', '2022']]
         lista_kpi = [['cierre por producto guardado despues de inventario', '2023', 'Recibido con fecha anterior al 14/01/2022'], 
-        ['cierre por producto guardado antes de inventario', '2021', 'Recibido con fecha posterior al 14/01/2022']]
+        ['cierre por producto guardado antes de inventario', '2021', 'Recibido con fecha posterior al 14/01/2022'],
+        ['cierre por producto guardado antes de inventario-ingresa con skutro', '2021', 'Recibido con fecha posterior al 14/01/2022']]
         lista_refact = 'cierre x recupero con cliente - refacturacion - base fal.com'
 
         self.multi_test(0, lista_f3) # F3 
@@ -145,12 +146,15 @@ class CF11_CD():
     
     def test_call_23(self):
         lista_f3 = [['cierre por f3 devuelto a proveedor', '2023']]
-        lista_f4 = [['f4 en revision', '2022'],['cierre por f4 cobrado a terceros', '2023'], ['cierre por f4 de merma', '2023'], 
+        lista_f4 = [['f4 en revision', '2022'],['cierre por f4 cobrado a terceros', '2023'], ['f4 merma', '2023'], 
                     ['entregado a cliente por politica (fast track)', '2023'], ['entregado a cliente', '2023']] 
         lista_f5 = [['producto en tienda', '2023'], ['cierre con f5 administrativo cd', '2023'], 
         ['producto compensado con ctverde-recibido', '2023'], ['cierre por producto compensado con tienda-recibido', '2023']]
         lista_kpi = [['cierre por producto guardado despues de inventario', '2023', 'Recibido con fecha anterior al 13/01/2023'], 
-        ['cierre por producto guardado antes de inventario', '2023', 'Recibido con fecha posterior al 13/01/2023']]
+        ['cierre por producto guardado antes de inventario', '2023', 'Recibido con fecha posterior al 13/01/2023'],
+        ['cierre por producto guardado antes de inventario-ingresa con skutro', '2023', 'Recibido con fecha posterior al 13/01/2023'],
+        ['cierre por producto guardado despues de inventario-ingresa con skutro', '2023', 'Recibido con fecha anterior al 13/01/2023'],
+        ['cierre por producto guardado antes de inventario-ingresa con f12tro', '2023', 'Recibido con fecha posterior al 13/01/2023']]
         lista_f11 = ['cierre por nuevo f11 en estado despachado']
 
         self.multi_test(0, lista_f3) # F3 
@@ -162,15 +166,15 @@ class CF11_CD():
 
     def save_test(self):
         dt_string = datetime.now().strftime('%y%m%d-%H%M')
-        self.data[7].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[4]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[4]}', index=False, encoding='utf-8') # Guarda el archivo 
-        bdcia = self.data[7].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
-        bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['ctech_key','prd_upc'],validate='many_to_one')
-        bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
-        bdcia4 = bdcia3.merge(self.data[3], how='left',left_on=[self.fcols[3]], right_on=['entrada'],validate='many_to_one')
-        bdcia5 = bdcia4.merge(self.data[3], how='left',left_on=[self.fcols[4]], right_on=['entrada'],validate='many_to_one')
+        self.data[7].to_excel(f'output/cierres_f11/cd/{dt_string}-{self.names[7]}-output.xlsx', sheet_name=f'{dt_string}_{self.names[4]}', index=False, encoding='utf-8') # Guarda el archivo 
+        # bdcia = self.data[7].merge(self.data[0], how='left', left_on=[self.fcols[0],self.pcols[2]], right_on=['nro_devolucion','upc'], validate='many_to_one')
+        # bdcia2 = bdcia.merge(self.data[1], how='left',  left_on=[self.fcols[1],self.pcols[2]], right_on=['ctech_key','prd_upc'],validate='many_to_one')
+        # bdcia3 = bdcia2.merge(self.data[2], how='left', left_on=[self.fcols[2],self.pcols[2]], right_on=['trf_number','prd_upc'], validate='many_to_one')
+        # bdcia4 = bdcia3.merge(self.data[3], how='left',left_on=[self.fcols[3]], right_on=['centrada'],validate='many_to_one')
+        # bdcia5 = bdcia4.merge(self.data[3], how='left',left_on=[self.fcols[4]], right_on=['centrada'],validate='many_to_one')
         #bdcia6 = bdcia4.merge(refact, how='left',left_on=[fcols[4]], right_on=['f12cod'],validate='many_to_one')
-        path = f'output/cierres_f11/cd/{dt_string}-{self.names[4]}-all.xlsx'
-        bdcia5.to_excel(path, sheet_name=f'{dt_string}_{self.names[4]}',index=False) 
+        path = f'output/cierres_f11/cd/{dt_string}-{self.names[7]}-all.xlsx'
+        # bdcia5.to_excel(path, sheet_name=f'{dt_string}_{self.names[4]}',index=False) 
         return path
 
     def save_selection(self):

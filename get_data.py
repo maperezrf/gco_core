@@ -30,7 +30,7 @@ class GetData():
         f3_colsreq = ['nro_devolucion', 'fecha_reserva', 'fecha_envio', 'fecha_anulacion', 'fecha_confirmacion', 'upc', 'sku', 'linea', 'descripcion6', 'cantidad', 'folio_f11', 'folio_f12']
         f4_colsreq = ['ctech_key', 'ctipo', 'cestado','fecha_registro', 'xdestino', 'prod_cat_id','prd_upc', 'qf04_ship','nformulario', 'fecha_reserva']
         f5_colsreq = ['trf_number', 'trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec','trf_status', 'prd_upc', 'trf_rec_to_date', 'total_cost']
-        kpi_colsreq = ['index', 'tip0_trabajo', 'entrada','fecha_paletiza', 'aaaa_paletiza']
+        kpi_colsreq = ['ind', 'centrada', 'ctiptrab','fcreareg', 'aaaa_paletiza','creferen','qcantida']
         ro_colsreq = ['ro', 'estado_ro']
         en_colsreq = ['centrada', 'fentrada']
         dv_colsreq = ['f11', 'sku_original', 'cant_und_generadas']
@@ -44,7 +44,7 @@ class GetData():
         f3_fnum = ['nro_devolucion','upc', 'sku','folio_f11', 'folio_f12']
         f4_fnum = ['ctech_key', 'prd_upc', 'nformulario']
         f5_fnum = ['trf_number', 'prd_upc']
-        kpi_fnum = ['entrada']
+        kpi_fnum = ['centrada', 'creferen']
         ro_fnum = ['ro']
         en_fnum = ['centrada']
         dv_fnum = ['f11']
@@ -55,16 +55,17 @@ class GetData():
         f4_num = ['qf04_ship']
         f5_num = ['trf_rec_to_date', 'total_cost']
         dv_num = ['cant_und_generadas']
+        kpi_num = ['qcantida']
 
         self.lista_fnum= [f3_fnum, f4_fnum, f5_fnum, kpi_fnum, ro_fnum, en_fnum, dv_fnum, f11_fnum]
-        self.lista_num= [f3_num, f4_num, f5_num, dv_num]
+        self.lista_num= [f3_num, f4_num, f5_num, kpi_num, dv_num]
 
     def set_colstext(self):
         # Texto 
         f3_text = ['linea', 'descripcion6']
         f4_text = ['cestado','xdestino', 'prod_cat_id']
         f5_text = ['trf_entry_date', 'trf_rec_date', 'loc_ship', 'loc_rec', 'trf_status']
-        kpi_text = ['tip0_trabajo']
+        kpi_text = ['ctiptrab']
         ro_text = ['estado_ro']
         en_text = []
         dv_text = []
@@ -123,13 +124,13 @@ class GetData():
         self.lista[0].drop_duplicates(['nro_devolucion', 'upc'], inplace= True)
         self.lista[1].drop_duplicates(['ctech_key', 'prd_upc'], inplace=True)
         self.lista[2].drop_duplicates(['trf_number','prd_upc'], inplace=True)
-        self.lista[3].drop_duplicates(['entrada'], inplace=True)
+        # self.lista[3].drop_duplicates(['entrada'], inplace=True)
 
         # Eliminar registros con #s de F nulos 
         self.lista[0] = self.lista[0][self.lista[0].nro_devolucion.notna()]
         self.lista[1] = self.lista[1][self.lista[1].ctech_key.notna()]
         self.lista[2] = self.lista[2][self.lista[2].trf_number.notna()]
-        self.lista[3] = self.lista[3][self.lista[3].entrada.notna()]
+        self.lista[3] = self.lista[3][self.lista[3].centrada.notna()]
 
     def save_files(self, folder):
         # Guardar archivos 
@@ -162,10 +163,10 @@ class GetData():
                 self.save_files('cierres_f11/cd')
 
             elif data_select=='2': # CF11s 2021
-                cf11_21_colsreq  = ['nfolio','f12', 'prd_upc', 'sku' , 'qproducto', 'xobservacion', 'xservicio','costo_total', 'estado_f11', 'status_final', 'f3', 'f4', 'f5', 'f11_nuevo', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'tranf_electro_factura', 'nota', 'ro','mc(f12)', 'ee(f11)'] # Para cd 2021 
+                cf11_21_colsreq  = ['nfolio','f12', 'prd_upc', 'sku' , 'qproducto', 'xobservacion', 'xservicio','costo_total', 'estado_f11', 'status_final', 'f3', 'f4', 'f5', 'f11_nuevo', 'reporte_a_contabilidad', 'movimiento_contable', 'tranf_electro_factura', 'nota', 'ro','mc(f12)', 'ee(f11)'] # Para cd 2021 
                 cf11_21_fnum = ['nfolio','f12', 'prd_upc', 'sku', 'f3', 'f4', 'f5', 'f11_nuevo']
                 cf11_21_num = [ 'qproducto', 'costo_total'] 
-                cf11_21_text = ['xobservacion', 'status_final', 'xservicio', 'estado_f11', 'reporte_a_contabilidad', 'movimiento_contable', 'transportadora_nuevo', 'tranf_electro_factura', 'nota']
+                cf11_21_text = ['xobservacion', 'status_final', 'xservicio', 'estado_f11', 'reporte_a_contabilidad', 'movimiento_contable', 'tranf_electro_factura', 'nota']
                 self.update_lists('cf11_cd_21', cf11_21_colsreq, cf11_21_fnum, cf11_21_num, cf11_21_text)
                 self.get_data()
                 self.lista[4] = self.lista[ 4].rename(columns={'f11':'nfolio'}) # Only for 2021 

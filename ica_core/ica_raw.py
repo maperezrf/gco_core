@@ -56,7 +56,7 @@ class InternalControlAnalysis:
 
     def get_checked(self):
         # verificar registros revisados
-        self.db.loc[self.db['GCO'].notna(), 'checked'] = 'y'
+        self.db.loc[self.db['GCO'].notna(), 'checked'] = 'Revisado GCO'
         self.db.loc[self.db['GCO'].isna(), 'checked'] = 'n'
 
     def get_ru_dup_mc(self):

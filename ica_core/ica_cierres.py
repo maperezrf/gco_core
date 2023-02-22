@@ -73,22 +73,22 @@ class CierresF11:
         df2= self.ica.get_fnan_cols(df1, [self.fcols[4],self.fcols[3]], 'KPID')
         if df2.empty == False:
             df3 = self.ica.get_duplicates( df2, [self.fcols[4],'prd_upc', 'qproducto'], 'F12 + UPC + Cantidad')
-            index_ne_kpi_di = self.ica.get_notfound( df3, kpi, [self.fcols[3]], ['entrada'], 'entrada', '(F12|F11)')
-            index_ne_kpi_di2 = self.ica.get_notfound( self.db.loc[index_ne_kpi_di], kpi, [self.fcols[4]], ['entrada'], 'entrada', '(F12|F11)')
-            pgdim1 = pd.merge(df3, kpi, left_on=[self.fcols[3]], right_on=['entrada'])
-            pgdim2 = pd.merge(df3.loc[index_ne_kpi_di], kpi, left_on=[self.fcols[4]], right_on=['entrada'])
+            index_ne_kpi_di = self.ica.get_notfound( df3, kpi, [self.fcols[3]], ['centrada'], 'centrada', '(F12|F11)')
+            index_ne_kpi_di2 = self.ica.get_notfound( self.db.loc[index_ne_kpi_di], kpi, [self.fcols[4]], ['centrada'], 'centrada', '(F12|F11)')
+            pgdim1 = pd.merge(df3, kpi, left_on=[self.fcols[3]], right_on=['centrada'])
+            pgdim2 = pd.merge(df3.loc[index_ne_kpi_di], kpi, left_on=[self.fcols[4]], right_on=['centrada'])
             lpgdi = [pgdim1, pgdim2]
             pgdim = pd.concat(lpgdi, axis=0)
             pgdimdyear = '' 
             if yyyy == '2022': 
-                pgdimdyear = self.ica.get_lvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA',commenty)
+                pgdimdyear = self.ica.get_lvalue(pgdim, 'fcreareg', pd.Timestamp(2022,1,14), 'NAA',commenty)
             elif yyyy =='2021':
-                pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA', commenty)
+                pgdimdyear = self.ica.get_gvalue(pgdim, 'fcreareg', pd.Timestamp(2022,1,14), 'NAA', commenty)
             elif yyyy =='2023':
-                if status == 'cierre por producto guardado despues de inventario':
-                    pgdimdyear = self.ica.get_mvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2023,1,13), 'NAA', "Recibido con fecha anterior al 13/01/2023")
+                if status.startswith('cierre por producto guardado despues de inventario'):
+                    pgdimdyear = self.ica.get_mvalue(pgdim, 'fcreareg', pd.Timestamp(2023,1,13), 'NAA', commenty)
                 else :
-                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2023,1,13), 'NAA', "Recibido con fecha posterior al 13/01/2023")
+                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fcreareg', pd.Timestamp(2023,1,13), 'NAA', commenty)
                 iokkpid = pgdimdyear[self.pcols[0]].values
                 self.ica.update_db(iokkpid,'GCO', 'OKK')
                 self.ica.update_db(iokkpid,'Comentario GCO', 'Coincidencia exacta (F12|F11)')
@@ -108,9 +108,9 @@ class CierresF11:
                 pgdim = pd.concat(lpgdi, axis=0)
                 pgdimdyear = '' 
                 if yyyy == '2022': 
-                    pgdimdyear = self.ica.get_lvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA',commenty)
+                    pgdimdyear = self.ica.get_lvalue(pgdim, 'fcreareg', pd.Timestamp(2022,1,14), 'NAA',commenty)
                 elif yyyy =='2021':
-                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fecha_paletiza', pd.Timestamp(2022,1,14), 'NAA', commenty)
+                    pgdimdyear = self.ica.get_gvalue(pgdim, 'fcreareg', pd.Timestamp(2022,1,14), 'NAA', commenty)
                 elif yyyy =='2023':
                     pgdimdyear = self.ica.get_gvalue(pgdim, 'fentrada', pd.Timestamp(2023,1,13), 'NAA', commenty)
                 iokend = pgdimdyear[self.pcols[0]].values
